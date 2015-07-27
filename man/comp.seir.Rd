@@ -5,53 +5,68 @@
 Solves the SEIR compartmental model
 }
 \description{
-Gives both deterministic and stochastic solutions for the calssic SEIR
+Gives both deterministic and stochastic solutions for the classic SEIR
 epidemic model.
 }
 \usage{
-comp.seir(De = 1.48, Tg = 2.6, R0 = 1.8, N = 6800000, I0 = 10, dt = 1, R1 = 1, t1 = 999, R2 = 1, t2 = 9999, noTimeSteps = 10, deterministic = TRUE)
+comp.seir(
+  De = 1.48, 
+  Tg = 2.6, 
+  R0 = 1.8, 
+  N = 6800000, 
+  I0 = 10, 
+  dt = 1, 
+  R1 = 1, 
+  t1 = 999, 
+  R2 = 1, 
+  t2 = 9999, 
+  noTimeSteps = 10, 
+  deterministic = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{De}{
-%%     ~~Describe \code{De} here~~
+The average duration of the E stage, the period during which the host is infected but not yet infectious.
 }
   \item{Tg}{
-%%     ~~Describe \code{Tg} here~~
+The generation time of the model. The duration of infectiousness Di is inferred from the generation time and the duration of the E stage De, according to Tg = De + Di.
 }
   \item{R0}{
-%%     ~~Describe \code{R0} here~~
+The basic reproductive number before time t1. The value of beta is inferred from the value of R0 according to R0 = beta Di.
 }
   \item{N}{
-%%     ~~Describe \code{N} here~~
+The size of the population.
 }
   \item{I0}{
-%%     ~~Describe \code{I0} here~~
+The number initially infectious.
 }
   \item{dt}{
-%%     ~~Describe \code{dt} here~~
+The duration of time assumed to occur for each timestep.
 }
   \item{R1}{
-%%     ~~Describe \code{R1} here~~
+The basic reproductive number after time t1 but before time t2. The value of beta is inferred from the value of R1 according to R1 = beta Di. 
 }
   \item{t1}{
-%%     ~~Describe \code{t1} here~~
+The time step at which the reproduction number changes from R0 to R1.
 }
   \item{R2}{
-%%     ~~Describe \code{R2} here~~
+The basic reproductive number after time t2. The value of beta is inferred from the value of R2 according to R2 = beta Di. 
 }
   \item{t2}{
-%%     ~~Describe \code{t2} here~~
+The time step ay which the reproduction number changes from R1 to R2.
 }
   \item{noTimeSteps}{
-%%     ~~Describe \code{noTimeSteps} here~~
+The total number of time steps that the solution is obtained for.
+}
+  \item{noReals}{
+Number of realizations generated for stochastic solutions. Ignored for deterministic solutions.
 }
   \item{deterministic}{
-%%     ~~Describe \code{deterministic} here~~
+If FALSE, the model solution is deterministic, using a positive definite Euler-type integration. If FALSE, the model is solved using a fixed time step stochastic algorithm. See details.
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+The model is defined independently
 }
 \value{
 %%  ~Describe the value returned
@@ -59,6 +74,7 @@ comp.seir(De = 1.48, Tg = 2.6, R0 = 1.8, N = 6800000, I0 = 10, dt = 1, R1 = 1, t
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
+\item{inc}{Description here}
 }
 \references{
 %% ~put references to the literature/web site here ~

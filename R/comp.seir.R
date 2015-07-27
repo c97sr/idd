@@ -1,17 +1,19 @@
-comp.seir <-
-function(	
-	  	De=1.48,		# Duration latent
-		Tg=2.6,			# Generation time
-		R0=1.8,			# Basic reproductive number
-		N=6800000,		# Population size
-		I0=10,			# Initial number infective
-		dt=1,			# Timestep
-		R1=1.0,         # Second R value
-		t1=999,         # time point of change
-		R2=1.0,         # Third R value
-		t2=9999,        # time point of change
-		noTimeSteps=10,
-		deterministic=TRUE) {
+# comp.seir()
+comp.seir <- function(	
+		De=1.48,			# Duration latent
+		Tg=2.6,				# Generation time
+		R0=1.8,				# Basic reproductive number
+		N=6800000,			# Population size
+		I0=10,				# Initial number infective
+		dt=1,				# Timestep
+		R1=1.0,         	# Second R value
+		t1=999,         	# time point of change
+		R2=1.0,         	# Third R value
+		t2=9999,        	# time point of change
+		noTimeSteps=10, 	# Number of timesteps
+		noReals=1,			# Number of realizations, ignored if solution is deterministic NOT YET IMPLEMENTED
+		deterministic=TRUE	# Mode of solution
+) {
 	
 	# Define the variable to be returned					
 	rtn_inf_inc <- vector(mode="numeric",length=noTimeSteps+1)

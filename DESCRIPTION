@@ -1,9 +1,9 @@
 Package: idd
 Type: Package
-Title: What the package does (short line)
-Version: 1.0
+Title: A collection of functions useful for the study of infectious disease dynamics
+Version: 0.90
 Date: 2015-07-24
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Author: Steven Riley
+Maintainer: Steven Riley <sr@stevenriley.net>
 Description: More about what it does (maybe more than one line)
-License: What license is it under?
+License: GPL 3.0
