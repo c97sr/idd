@@ -1,4 +1,4 @@
-# just testing comments
+# just testing comments again
 # comp.seir()
 comp.seir <- function(	
 		De=1.48,			# Duration latent
