@@ -1,11 +1,14 @@
 # Function to give a complete tree for a simple branching process
+# assumes poisson distributed offspring distribution and serial interval
+# distribution
+
 branch.basic <- function(
 	Tg=5,		# Generation time
 	R0=2.6,		# Basic reproductive number
 	Nmax=30		# Maximum number of infections in the cluster
 ) {
 	
-	# Define the outputs who we are 
+	# Define the outputs to be returned
 	rtn_times <- numeric(mode="numeric",length=Nmax)
 	rtn_infectors <- numeric(mode="numeric",length=Nmax)
 	
@@ -18,6 +21,12 @@ branch.basic <- function(
 	
 	# Main loop to go through every infector 
 	while (completed_infector < max_infector) {
+
+
 		
 	}
+
+        # Return list of infectors and times of infection
+        list(t=rtn_times, i = rtn_infectors )
+
 }
