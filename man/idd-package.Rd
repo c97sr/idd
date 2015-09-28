@@ -3,10 +3,10 @@
 \alias{idd}
 \docType{package}
 \title{
-\packageTitle{idd}
+Infectious disease dynamics
 }
 \description{
-\packageDescription{idd}
+A set of functions to help better understand the transmission of infectious diseases. 
 }
 \details{
 The DESCRIPTION file:
@@ -14,9 +14,7 @@ The DESCRIPTION file:
 \packageIndices{idd}
 This package provides a variety of functions to help investigate infectious disease dynamics. The functions fall into }
 \author{
-\packageAuthor{idd}
-
-Maintainer: \packageMaintainer{idd}
+Steven Riley
 }
 \references{
 ~~ Literature or other references for background information ~~
@@ -24,10 +22,10 @@ Maintainer: \packageMaintainer{idd}
 %% ~~ Optionally other standard keywords, one per line, from file KEYWORDS in ~~
 %% ~~ the R documentation directory ~~
 \keyword{ package }
-\seealso{
+%% \seealso{
 %% ~~ Optional links to other man pages, e.g. ~~
 %% ~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
-}
-\examples{
+%% }
+%% \examples{
 %% ~~ simple examples of the most important functions ~~
-}
+%% }

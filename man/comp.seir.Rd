@@ -1,5 +1,5 @@
 \name{comp.seir}
-\alias{comp.seir}
+%\alias{comp.seir}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Solves the SEIR compartmental model
@@ -20,7 +20,8 @@ comp.seir(
   t1 = 999, 
   R2 = 1, 
   t2 = 9999, 
-  noTimeSteps = 10, 
+  noTimeSteps = 10,
+  noReals = 1, 
   deterministic = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -66,7 +67,7 @@ If FALSE, the model solution is deterministic, using a positive definite Euler-t
 }
 }
 \details{
-The model is defined independently
+The model in terms of state variables and the haard that events occur.
 }
 \value{
 %%  ~Describe the value returned
@@ -77,20 +78,18 @@ The model is defined independently
 \item{inc}{Description here}
 }
 \references{
-%% ~put references to the literature/web site here ~
+This is a very commonly used model, but is usually specified as a deterministic model. See the supporting info of the paper below for a nice description of the stochastic formulation.
+
+Transmission dynamics of the etiological agent of SARS in Hong Kong: impact of public health interventions. Riley S, Fraser C, Donnelly CA, Ghani AC, Abu-Raddad LJ, Hedley AJ, Leung GM, Ho LM, Lam TH, Thach TQ, Chau P, Chan KP, Lo SV, Leung PY, Tsang T, Ho W, Lee KH, Lau EM, Ferguson NM, Anderson RM. Science. 2003 Jun 20;300(5627):1961-6. 
+
 }
 \author{
-%%  ~~who you are~~
+Steven Riley.
 }
-\note{
-%%  ~~further notes~~
-}
+%%\note{%%~~further notes~~}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+%%\seealso{%% ~~objects to See Also as \code{\link{help}}, ~~~}
 
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
 ##---- Should be DIRECTLY executable !! ----
 ##-- ==>  Define data, use random,
