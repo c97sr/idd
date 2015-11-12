@@ -1,7 +1,7 @@
 #' Solves the SEIR model 
 #'
 #' Creates both deterministic and stochastic solutions to a common
-#' epidemic model
+#' epidemic model.
 #'
 #' @param De duration latent
 #' @param Tg generation time
