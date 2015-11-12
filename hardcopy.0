@@ -1,0 +1,42 @@
+       -r [pid.tty.host]
+       -r sessionowner/[pid.tty.host]
+            resumes a detached screen session.  No other options (except combinations with -d/-D)
+            may  be  specified, though an optional prefix of [pid.]tty.host may be needed to dis
+            tinguish between multiple detached screen sessions.  The second form is used to  con
+            nect  to  another  user's screen session which runs in multiuser mode. This indicates
+            that screen should look for sessions  in  another  user's  directory.  This  requires
+            setuid-root.
+
+       -R   attempts  to  resume the youngest (in terms of creation time) detached screen session
+            it finds.  If successful, all other command-line options are ignored.  If no detached
+            session  exists,  starts a new session using the specified options, just as if -R had
+            not been specified. The option is set by default if screen is run  as  a  login-shell
+            (actually  screen  uses "-xRR" in that case).  For combinations with the -d/-D option
+            see there.  Note: Time-based session selection is a Debian addition.
+
+       -s program
+            sets the default shell to the program specified, instead of the value in the environ
+            ment variable $SHELL (or "/bin/sh" if not defined).  This can also be defined through
+            the "shell" .screenrc command.
+
+       -S sessionname
+            When creating a new session, this option can be used to specify a meaningful name for
+            the  session.  This  name  identifies  the session for "screen -list" and "screen -r"
+            actions. It substitutes the default [tty.host] suffix.
+
+       -t name
+            sets the title (a.k.a.) for the default shell or specified  program.   See  also  the
+            "shelltitle" .screenrc command.
+
+       -T term
+            Set  the  $TERM environment varible using the spcified term as opposed to the defualt
+            setting of screen.
+
+       -U   Run screen in UTF-8 mode. This option tells  screen  that  your  terminal  sends  and
+            understands  UTF-8 encoded characters. It also sets the default encoding for new win
+            dows to `utf8'.
+
+       -v   Print version number.
+
+       -wipe [match]
+sriley@FI--DIDESR:~/Dropbox/git/idd$
