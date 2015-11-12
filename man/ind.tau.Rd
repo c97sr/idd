@@ -14,12 +14,13 @@ ind.tau(Tg = 5, R0 = 2.6, Nmax = 30)
 \item{Nmax}{the maximum number if infections in a cluster}
 }
 \value{
-Return a list of infectors and times of infection.
-The function itself is not yet implemented
+Returns a list of times of infection and indices.
+The position in the list of infection times corresponds to
+the index given in the second argument.
 }
 \description{
-Simulates a sequence of infectin events from individuals
-with infections drawn from simple offspring and serial
+Simulates a sequence of individual infection events.
+Infections are drawn from simple offspring and serial
 interval distributions.
 }
 \examples{

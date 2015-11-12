@@ -41,7 +41,7 @@ second is the timepoints to which the incidence refers.
 }
 \description{
 Creates both deterministic and stochastic solutions to a common
-epidemic model
+epidemic model.
 }
 \examples{
 comp.seir()
