@@ -1,17 +1,17 @@
 # Copyright Steven Riley (sr@stevenriley.net)
-
+#
 # This file is part of the library idd.
-
+#
 # idd is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-
+#
 # This work is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-
+#
 # You should have received a copy of the GNU General Public License
 # along with this idsource.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -33,7 +33,6 @@
 #' @param noTimeSteps number of timesteps
 #' @param noReals number of realizations, NOT YET IMPLEMENTED
 #' @param deterministic mode of solution, NOT YET IMPLEMENTED
-#'
 #'
 #' @return A list of two elements. The first is the incidence of infection and the
 #' second is the timepoints to which the incidence refers.
@@ -173,13 +172,15 @@ ind.tau <- function(
 #' Uses either linear or log-linear random walks to propose multivariate
 #' jumps in parameter space.
 #'
-#' @param ptab a table of parameter names, values and min and maxes. See Details.
-#' @param fmask a vector of strings of the parameters within the table to be fitted.
+#' @param ptab a table of parameter names, values and min and maxes. 
+#' See Details.
+#' @param fmask a vector of strings of the parameters within the table 
+#' to be fitted.
 #' The default value is to assume all the parameters are to be fitted
 #'
-#' @return A vector of proposed parameter values. The vector is the same length as ptab
-#' so it copies in the values of the parameters that are not being updated.
-#'
+#' @return A vector of proposed parameter values. The vector is the 
+#' same length as ptab so it copies in the values of the parameters 
+#' that are not being updated.
 srg.param.propose.update <- function(ptab,fmask=1:(dim(ptab)[1])) {
 
 	bps <- ptab[,"val"]
