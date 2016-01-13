@@ -32,3 +32,6 @@
 *.pdf
 .Rproj.user
 *~
+.Rbuildignore
+.Rhistory
+
