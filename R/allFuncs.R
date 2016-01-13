@@ -169,21 +169,23 @@ ind.tau <- function(
 
 #' Proposes parameter updates for an MCMC algorithm
 #'
-#' Uses either linear or log-linear random walks to propose multivariate
-#' jumps in parameter space.
+#' Uses either linear or log-linear random walks to propose 
+#' multivariate jumps in parameter space.
 #'
-#' @param ptab a table of parameter names, values and min and maxes. 
+#' @param pt a table of parameter names, values and min and maxes. 
 #' See Details.
-#' @param fmask a vector of strings of the parameters within the table 
+#' @param fm a vector of strings of the parameters within the table 
 #' to be fitted.
 #' The default value is to assume all the parameters are to be fitted
+#'
+#' @details The 
 #'
 #' @return A vector of proposed parameter values. The vector is the 
 #' same length as ptab so it copies in the values of the parameters 
 #' that are not being updated.
-srg.param.propose.update <- function(ptab,fmask=1:(dim(ptab)[1])) {
+mh_update <- function(pt,fmask=1:(dim(pt)[1])) {
 
-	bps <- ptab[,"val"]
+	bps <- pt[,"val"]
 	rtn <- bps
 	nofit <- length(rtn)
 
@@ -191,9 +193,9 @@ srg.param.propose.update <- function(ptab,fmask=1:(dim(ptab)[1])) {
 
 		# Set up and transform to unit scale
 		rv <- runif(1)
-		rv <- (rv-0.5)* ptab[i,"step"]
+		rv <- (rv-0.5)* pt[i,"step"]
 		x <- bps[fmask[i]]
-		x <- SR_to_unit(x,min=ptab[i,"min"],max=ptab[i,"max"],logflag=ptab[i,"log"])
+		x <- SR_to_unit(x,min=pt[i,"min"],max=pt[i,"max"],logflag=pt[i,"log"])
 		x <- x + rv
 
 		# Bouncing boundary conditons
@@ -206,7 +208,7 @@ srg.param.propose.update <- function(ptab,fmask=1:(dim(ptab)[1])) {
 
 		# Test for errors and return to originl scales
 		if (x < 0 || x > 1) stop("problem here")
-		rtn[fmask[i]] <- SR_from_unit(x,min=ptab[i,"min"],max=ptab[i,"max"],logflag=ptab[i,"log"])
+		rtn[fmask[i]] <- SR_from_unit(x,min=pt[i,"min"],max=pt[i,"max"],logflag=pt[i,"log"])
 
 	}
 
