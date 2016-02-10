@@ -195,7 +195,7 @@ mh_update <- function(pt,fmask=1:(dim(pt)[1])) {
 		rv <- runif(1)
 		rv <- (rv-0.5)* pt[i,"step"]
 		x <- bps[fmask[i]]
-		x <- SR_to_unit(x,min=pt[i,"min"],max=pt[i,"max"],logflag=pt[i,"log"])
+		x <- to_unit_scale(x,min=pt[i,"min"],max=pt[i,"max"],logflag=pt[i,"log"])
 		x <- x + rv
 
 		# Bouncing boundary conditons
@@ -208,44 +208,35 @@ mh_update <- function(pt,fmask=1:(dim(pt)[1])) {
 
 		# Test for errors and return to originl scales
 		if (x < 0 || x > 1) stop("problem here")
-		rtn[fmask[i]] <- SR_from_unit(x,min=pt[i,"min"],max=pt[i,"max"],logflag=pt[i,"log"])
+		rtn[fmask[i]] <- from_unit_scale(x,min=pt[i,"min"],max=pt[i,"max"],logflag=pt[i,"log"])
 
 	}
 
 	rtn
 }
 
-fnProposeParamUpdatesSingle <- function(ptab,index) {
 
-	# Takes biological parameters, a mask which is a list of the parameters
-	# being fitted, a table of the fitted parameters and their ranges and
-	# the number of parameters to be fitted.
-	# Returns a proposed vector of parameters.
-	# Comment in and out bouncing and cyclical boundary conditions
-	# for the random walk
+#' Setup a new table for an MCMC study
+mh_tab_setup <- function(
+  vpn = c("R0","Tg"),
+  vcv = c(1,1),
+  vub = rep(10,length(vpn)),
+  vlb = rep(0.1,length(vpn)),
+  vls = rep(FALSE,length(vpn)),
+  vss = rep(0.1,length(vpn))
+) {
+  
+  # Setup the vector
+  rtn <- data.frame(
+    val=vcv,
+    max=vub,
+    min=vlb,
+    step=vss,
+    log=vls,
+    row.names = vpn
+  )
+  
+  # Return the table
+  rtn
 
-	bps <- ptab[,"val"]
-	rtn <- bps
-	if (index < 0 || index > dim(ptab)[1]) {
-		stop("index must be less than or equal to number of parameters")
-	}
-
-	# Set up and transform to unit scale
-	rv <- runif(1)
-	rv <- (rv-0.5)* ptab[index,"step"]
-	x <- bps[index]
-	x <- SR_to_unit(x,min=ptab[index,"min"],max=ptab[index,"max"],logflag=ptab[index,"log"])
-	x <- x + rv
-
-	# Cyclical boundary conditions
-	if (x < 0) x <- 1 + x
-	if (x > 1) x <- x - 1
-
-	# Test for errors and return to originl scales
-	if (x < 0 || x > 1) stop("problem here")
-	rtn[index] <- SR_from_unit(x,min=ptab[index,"min"],max=ptab[index,"max"],logflag=ptab[index,"log"])
-
-	rtn
 }
-
-
