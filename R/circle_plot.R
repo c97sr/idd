@@ -1,13 +1,13 @@
-circle_plot <- function() {
+circle_plot <- function(wdir='~/png') {
 
   require("shape")
   frames = 110
   rands <- data.frame(matrix(nrow=0,ncol=3))
   for ( i in 1:frames) {
     # creating a name for each plot file with leading zeros
-    if (i < 10) {name = paste('~/png/000',i,'plot.png',sep='')}
-    if (i < 100 && i >= 10) {name = paste('~/png/00',i,'plot.png', sep='')}
-    if (i >= 100) {name = paste('~/png/0', i,'plot.png', sep='')}
+    if (i < 10) {name = paste(wdir,'/000',i,'plot.png',sep='')}
+    if (i < 100 && i >= 10) {name = paste(wdir,'/00',i,'plot.png', sep='')}
+    if (i >= 100) {name = paste(wdir,'/0', i,'plot.png', sep='')}
     
     png(name)
     plot( x = NULL,xlim=c(log10(0.05), log10(1)), ylim=c(1,3), xlab =expression('p'['c']), ylab =expression("R"[0]),

@@ -174,7 +174,7 @@ ind.tau <- function(
 #'
 #' @param pt a table of parameter names, values and min and maxes. 
 #' See Details.
-#' @param fm a vector of strings of the parameters within the table 
+#' @param fmask a vector of strings of the names of parameters within the table 
 #' to be fitted.
 #' The default value is to assume all the parameters are to be fitted
 #'
