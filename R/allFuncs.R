@@ -167,6 +167,24 @@ ind.tau <- function(
 
 }
 
+#' Translates a number from a log or linear scale to a unit scale
+#' 
+#' @param y is the number on the non-unit scale
+# min is the assumed minimum value of the non-unit scale
+# max is the assumed maximum value of the non-unit scale
+# logbase is the base of the log scale if used
+# log is a boolean for whether the scale is log or linear
+# Returns the value on the unit scale
+to_unit_scale <- function(y,min=1,max=100,logbase=10,logflag=FALSE) {
+  if (logflag) {
+    rtn <- (log(y,logbase)-log(min,logbase))/(log(max,logbase)-log(min,logbase))
+  } else {
+    rtn <- (y-min)/(max-min) 
+  }
+  rtn
+}
+
+
 #' Proposes parameter updates for an MCMC algorithm
 #'
 #' Uses either linear or log-linear random walks to propose 
@@ -183,6 +201,18 @@ ind.tau <- function(
 #' @return A vector of proposed parameter values. The vector is the 
 #' same length as ptab so it copies in the values of the parameters 
 #' that are not being updated.
+#' 
+#' @examples
+sirTab <- data.frame(
+    val=c(1.8,2.6),
+    max=c(5.0,7.0),
+    min=c(0.9,5.0),
+    step=c(0.1,0.1),
+    log=c(FALSE,FALSE),
+    row.names = c("R0","Tg")
+)
+mh_update(sirTab)
+#' 
 mh_update <- function(pt,fmask=1:(dim(pt)[1])) {
 
 	bps <- pt[,"val"]
