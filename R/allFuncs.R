@@ -211,7 +211,8 @@ sirTab <- data.frame(
     log=c(FALSE,FALSE),
     row.names = c("R0","Tg")
 )
-mh_update(sirTab)
+
+#' mh_update(sirTab)
 #' 
 mh_update <- function(pt,fmask=1:(dim(pt)[1])) {
 
