@@ -41,8 +41,8 @@
 #' @return A list of two elements. The first is the incidence of infection
 #' and the second is the timepoints to which the incidence refers.
 #'
-#' @examples comp.seir()
-#' @examples comp.seir(R0=0.999)
+#' @examples comp_seir()
+#' @examples comp_seir(R0=0.999)
 comp_seir <- function(
   De=7,
   Tg=15,
@@ -66,7 +66,7 @@ comp_seir <- function(
   # Define the variable to be returned
   rtn_inf_inc <- vector(mode="numeric",length=noTimeSteps+1)
   rtn_beta <- vector(mode="numeric",length=noTimeSteps+1)
-  
+
   # Define derived parameters
   Di <- Tg - De
 
@@ -88,14 +88,14 @@ comp_seir <- function(
     } else {
       indTrick <- 0
     }
-      
+
     # Set Beta
     if (i < t1/dt) {
-      beta = R0 / Di * (1+A*sin(i*dt*2*pi/360)) 
+      beta = R0 / Di * (1+A*sin(i*dt*2*pi/360))
     } else if (i < t2/dt) {
-      beta = R1 / Di * (1+A*sin(i*dt*2*pi/360)) 
+      beta = R1 / Di * (1+A*sin(i*dt*2*pi/360))
     } else {
-      beta = R2 / Di * (1+A*sin(i*dt*2*pi/360)) 
+      beta = R2 / Di * (1+A*sin(i*dt*2*pi/360))
     }
 
     rtn_beta[i] <- beta
@@ -134,7 +134,7 @@ comp_seir <- function(
     state_R <- state_R - nRec
 
     # Update the output variables
-    
+
 
   } # End main loop
 
@@ -165,7 +165,9 @@ zika_invasion <- function(
     seed=19283719,
     highlights=c(1,2,3),
     highcolors=c("red","magenta","cyan"),
-    maxts=360*2) {
+    maxts=360*2,
+    R0axes=0:4,
+    incaxes=seq(0,3.5,0.5)) {
   set.seed(seed)
   nosens <- length(highlights)
   senstab <- array(dim=c(its,maxts+1))
@@ -177,25 +179,25 @@ zika_invasion <- function(
     De=De, Tg=Tg, A=0.9, I0 = 10, trickle=0/7,
     noTimeSteps=maxts,deterministic=FALSE,R0=2,N=N
   )
-  if (file != "screen") pdf_fig_proof(file=file)
-  plot(r1$beta*Di,type="n",axes=FALSE,xlab="",ylab="")
-  axis(4)
+  if (file != "screen") pdf_fig_proof(file=file,pw=9)
+  plot(r1$beta*Di,type="n",ylim=c(min(R0axes),max(R0axes)),axes=FALSE,xlab="",ylab="")
+  axis(4,at=R0axes,col=grey.colors(10)[5],las=1)
   polygon(
       c(0:maxts,maxts:0),c(r1$beta*Di,rep(0,maxts+1)),
       col=grey.colors(10)[5],border=NA)
   par(new=TRUE)
-  plot(r1$inf_inc,type="l",col="black",
+  plot(r1$inf_inc/N*100,type="l",col="black",
        xlab="Day", ylab="Incidence",
-       lwd=2,axes=FALSE)
+       lwd=2,axes=FALSE,ylim=c(min(incaxes),max(incaxes)))
   axis(1)
-  axis(2)
+  axis(2,las=1,at=incaxes)
   for (i in 1:its) {
     r2 <- comp_seir(
       De=De, Tg=Tg, A=0.9, I0 = 0, trickle=3/7,
       noTimeSteps=maxts,deterministic=FALSE,
       trickleStart=70,R0=2,N=N)
-      points(r2$inf_inc,type="l",col=grey.colors(10)[9])
-      senstab[i,] <- r2$inf_inc
+      points(r2$inf_inc/N*100,type="l",col=grey.colors(10)[9])
+      senstab[i,] <- r2$inf_inc/N*100
   }
   for (i in 1:length(highlights)) {
       points(senstab[highlights[i],],type="l",col=highcolors[i],lwd=2)
@@ -248,7 +250,7 @@ ind_tau <- function(
 }
 
 #' Translates a number from a log or linear scale to a unit scale
-#' 
+#'
 #' @param y is the number on the non-unit scale
 #' @param min is the assumed minimum value of the non-unit scale
 #' @param max is the assumed maximum value of the non-unit scale
@@ -259,7 +261,7 @@ to_unit_scale <- function(y,min=1,max=100,logbase=10,logflag=FALSE) {
   if (logflag) {
     rtn <- (log(y,logbase)-log(min,logbase))/(log(max,logbase)-log(min,logbase))
   } else {
-    rtn <- (y-min)/(max-min) 
+    rtn <- (y-min)/(max-min)
   }
   rtn
 }
@@ -267,26 +269,26 @@ to_unit_scale <- function(y,min=1,max=100,logbase=10,logflag=FALSE) {
 
 #' Proposes parameter updates for an MCMC algorithm
 #'
-#' Uses either linear or log-linear random walks to propose 
+#' Uses either linear or log-linear random walks to propose
 #' multivariate jumps in parameter space.
 #'
-#' @param pt a table of parameter names, values and min and maxes. 
+#' @param pt a table of parameter names, values and min and maxes.
 #' See Details.
-#' @param fmask a vector of strings of the names of parameters within the table 
+#' @param fmask a vector of strings of the names of parameters within the table
 #' to be fitted.
 #' The default value is to assume all the parameters are to be fitted
 #'
-#' @details The 
+#' @details The
 #'
-#' @return A vector of proposed parameter values. The vector is the 
-#' same length as ptab so it copies in the values of the parameters 
+#' @return A vector of proposed parameter values. The vector is the
+#' same length as ptab so it copies in the values of the parameters
 #' that are not being updated.
-#' 
+#'
 #' @examples sirTab <- data.frame(val=c(1.8,2.6), max=c(5.0,7.0),
 #' min=c(0.9,5.0), step=c(0.1,0.1), log=c(FALSE,FALSE),
 #' row.names = c("R0","Tg"))
 #' mh_update(sirTab)
-#' 
+#'
 mh_update <- function(pt,fmask=1:(dim(pt)[1])) {
 
 	bps <- pt[,"val"]
