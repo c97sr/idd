@@ -334,3 +334,11 @@ attack_rate <- function(R0=1.8) {
   tmp <- uniroot(f,c(0.000001,0.9999999),tol=0.001)
   tmp$root
 }
+
+# Some script lines to be used for development
+if (FALSE) {
+
+  # Reinstall and reload the library
+  install( ".",force=TRUE)
+  library("idd")
+}
