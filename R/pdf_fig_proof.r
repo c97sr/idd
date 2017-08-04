@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this idsource.  If not, see <http://www.gnu.org/licenses/>.
 
-#' Opens a pdf device with sensible options 
+#' Opens a pdf device with sensible options
 #'
 #' Starts a new pdf device with the width and height of the plotting
 #' area specified in real distance units and with a specified margin
@@ -54,5 +54,5 @@ pdf_fig_proof <- function(
       cex=textscale,
       fig=posplot,
       mai=c(0,0,0,0),
-      xpd=xpd)    
+      xpd=xpd)
 }

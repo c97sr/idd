@@ -16,5 +16,3 @@
 #' the UK.
 #' \url{https://www.gov.uk/government/statistical-data-sets/structure-of-the-livestock-industry-in-england-at-december}
 NULL
-
-

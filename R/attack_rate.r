@@ -15,18 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this idsource.  If not, see <http://www.gnu.org/licenses/>.
 
-# Translates a value from a unit scale to either a log or a linear scale
-# x is the number on the unit scale
-# min is the minimum value of the non-unit scale
-# max is the maximum value of the non-unit scale
-# logbase is the base of the log scale if used
-# log is a boolean with TRUE for a log scale and FALSE for a linear scale
-# Returns the value on the non-unit scale
-unit_scale_from <- function(x,min=1,max=100,logbase=10,logflag=FALSE) {
-  if (logflag) {
-    rtn <- min*logbase^(x*(log(max,logbase)-log(min,logbase)))
-  } else {
-    rtn <- min + (max-min)*x
-  }
-  rtn
+#' Solves the classic relationship between R0 and cumulative attack rate
+#'
+#' @param R0 basic reproductive number
+#'
+#' @example attack_rate(1.8)
+#' @example attack_rate(4.0)
+#' @example attack_rate(3.0)
+attack_rate <- function(R0=1.8) {
+  f <- function(a){1-exp(-R0*a)-a}
+  tmp <- uniroot(f,c(0.000001,0.9999999),tol=0.001)
+  tmp$root
 }

@@ -10,10 +10,7 @@
 # This work is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this idsource.  If not, see <http://www.gnu.org/licenses/>.
+# GNU General Public License for more details
 
 # Translates a number from a log or linear scale to a unit scale
 # x is the number on the non-unit scale
@@ -22,7 +19,7 @@
 # logbase is the base of the log scale if used
 # log is a boolean for whether the scale is log or linear
 # Returns the value on the unit scale
-to_unit_scale <- function(y,min=1,max=100,logbase=10,logflag=FALSE) {
+unit_scale_to <- function(y,min=1,max=100,logbase=10,logflag=FALSE) {
   if (logflag) {
     rtn <- (log(y,logbase)-log(min,logbase))/(log(max,logbase)-log(min,logbase))
   } else {
@@ -30,4 +27,3 @@ to_unit_scale <- function(y,min=1,max=100,logbase=10,logflag=FALSE) {
   }
   rtn
 }
-
