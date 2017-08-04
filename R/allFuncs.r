@@ -86,3 +86,11 @@ circle_plot <- function(wdir='~/png') {
 
 
 }
+
+# Some script lines to be used for development
+if (FALSE) {
+
+  # Reinstall and reload the library
+  install( ".",force=TRUE)
+  library("idd")
+}
