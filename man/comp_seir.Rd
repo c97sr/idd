@@ -52,6 +52,9 @@ and the second is the timepoints to which the incidence refers.
 Creates both deterministic and stochastic solutions to a common
 epidemic model.
 }
+\details{
+Details go here XXX new edit YYYY
+}
 \examples{
 comp_seir()
 comp_seir(R0=0.999)

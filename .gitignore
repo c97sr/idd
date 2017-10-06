@@ -31,7 +31,7 @@
 *~
 *.pdf
 .Rproj.user
-*~
+\#*#
 .Rbuildignore
 .Rhistory
 .DS_Store

@@ -38,6 +38,8 @@
 #' @param noReals number of realizations, NOT YET IMPLEMENTED
 #' @param deterministic mode of solutions
 #'
+#' @details Details go here XXX new edit YYYY
+#'
 #' @return A list of two elements. The first is the incidence of infection
 #' and the second is the timepoints to which the incidence refers.
 #'
