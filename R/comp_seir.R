@@ -147,3 +147,11 @@ comp_seir <- function(
       beta=rtn_beta)
 
 }
+
+if (FALSE) {
+    library(devtools)
+    detach("package:idd", unload=TRUE)
+    install_github("c97sr/idd",force=TRUE)
+    install.packages("../../idd",repos=NULL,force=TRUE)
+    library(idd)
+}
