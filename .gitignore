@@ -7,35 +7,30 @@
 # Precompiled Headers
 *.gch
 *.pch
-
 # Compiled Dynamic libraries
 *.so
 *.dylib
 *.dll
-
 # Fortran module files
 *.mod
-
 # Compiled Static libraries
 *.lai
 *.la
 *.a
 *.lib
-
 # Executables
 *.exe
 *.out
 *.app
-
 # Additional files for idd
 *~
 *.pdf
 .Rproj.user
 \#*#
-.Rbuildignore
 .Rhistory
 .DS_Store
 *history
 .Rproj.user*
 idd.Rproj
 *\#*
+inst/doc
