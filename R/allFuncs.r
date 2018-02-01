@@ -90,7 +90,7 @@ circle_plot <- function(wdir='~/png') {
 # Some script lines to be used for development
 if (FALSE) {
 
-  # This file san probably go now
+  # This file can probably go now
   
   # Reinstall and reload the library
   install( ".",force=TRUE)
