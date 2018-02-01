@@ -31,6 +31,6 @@
 .DS_Store
 *history
 .Rproj.user*
-idd.Rproj
+*Rproj
 *\#*
 inst/doc
