@@ -35,4 +35,7 @@
 .Rbuildignore
 .Rhistory
 .DS_Store
-.Rapp.history
+*history
+.Rproj.user*
+idd.Rproj
+*\#*

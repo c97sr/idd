@@ -60,3 +60,7 @@ ind_tau <- function(
   list(t=rtn_times, i = rtn_infectors)
 
 }
+
+if (FALSE) {
+
+}

@@ -71,4 +71,20 @@ if (FALSE) {
 
     y
 
+    # Debug the svir
+    library(devtools)
+    detach("package:idd", unload=TRUE)
+    install_github("c97sr/idd", force=TRUE)
+    install.packages("../../idd", repos=NULL, force=TRUE)
+    library(idd)
+    
+    y1 <- comp_svir(N=10000,R0=1.8,doPlot=TRUE)
+    sum(y1$inf_inc)/10000
+    
+    y3 <- comp_svir(startVacc=10,vacRate=1000)
+    plot(y1$time,y1$inf_inc,type="l",xlab="Time",ylab="Incidence")
+    points(y2$time,y2$inf_inc)
+
+    ## Stop here. This is enough to try to write the exam
+    
 }
