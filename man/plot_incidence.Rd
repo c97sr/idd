@@ -2,17 +2,12 @@
 % Please edit documentation in R/forecasting_practical.R
 \name{plot_incidence}
 \alias{plot_incidence}
-\title{plots the incidence for a given flu season and a given country}
+\title{plots the incidence}
 \usage{
-plot_incidence(flu_data, country_code = "USA", year = 2016,
-  log_scale = TRUE)
+plot_incidence(incidence_data, log_scale = FALSE)
 }
 \arguments{
-\item{flu_data}{matrix with flu incidence data}
-
-\item{country_code}{character vector of length 1: 3-letter country code}
-
-\item{year}{numeric vector of length 1: year to plot}
+\item{incidence_data}{data frame extracted by \code{extract_incidence}}
 
 \item{log_scale}{logical vector of length 1: if TRUE, plot on log scale, 
 otherwise plot on linear scale}
@@ -21,6 +16,5 @@ otherwise plot on linear scale}
 ggplot object
 }
 \description{
-\code{plot_incidence} takes the flu incidence matrix and makes a plot of
-the incidence for a given flu season and a given country.
+\code{plot_incidence} plots the incidence extracted by \code{extract_incidence}
 }
