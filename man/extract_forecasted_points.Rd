@@ -4,12 +4,14 @@
 \alias{extract_forecasted_points}
 \title{extract forecasted points from linear regression object}
 \usage{
-extract_forecasted_points(lm_output, incidence_data, log_transform)
+extract_forecasted_points(lm_output, incidence_data, weeks_ahead, log_transform)
 }
 \arguments{
 \item{lm_output}{linear regression object returned by \code{linear_regression}}
 
 \item{incidence_data}{incidence data extracted by \code{extract_incidence}}
+
+\item{weeks_ahead}{numeric vector of length 1: number of weeks to forecast ahead}
 
 \item{log_transform}{logical vector of length 1: if TRUE, linear 
 regression was performed on log transformed data, otherwise linear regression

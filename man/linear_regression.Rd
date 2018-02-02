@@ -4,15 +4,11 @@
 \alias{linear_regression}
 \title{performs linear regression for a given country and year}
 \usage{
-linear_regression(flu_data, country_code = "USA", year = 2016,
-  current_week = 47, n_weeks_prior = 4, log_transform = TRUE)
+linear_regression(incidence_data, current_week = 47, n_weeks_prior = 4,
+  log_transform = TRUE)
 }
 \arguments{
-\item{flu_data}{matrix with flu incidence data}
-
-\item{country_code}{character vector of length 1: 3-letter country code}
-
-\item{year}{numeric vector of length 1: year to plot}
+\item{incidence_data}{data frame extracted by \code{extract_incidence}}
 
 \item{current_week}{numeric vector of length 1: week number of the current week}
 
@@ -26,8 +22,8 @@ original data}
 linear regression object (see documentation for \code{lm})
 }
 \description{
-\code{linear_regression} takes the flu incidence matrix and performs
-linear regression for a given flu season and a given country.
+\code{linear_regression} takes the incidence data (already subsetted for 
+country and year) and performs linear regression.
 We also specify the "current week" and how many previous weeks' worth of data
 to use.
 }
