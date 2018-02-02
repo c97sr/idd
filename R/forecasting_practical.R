@@ -48,10 +48,17 @@ plot_incidence <- function(incidence_data, log_scale = FALSE) {
 
   label_x_axis_every <- 5
   label_index <- seq(1, nrow(incidence_data), by = label_x_axis_every)
-  g <- ggplot(incidence_data, aes(x = t)) + geom_point(aes(y = incidence)) +
-    scale_x_continuous("Week", breaks = incidence_data[label_index, "t"],
+  g <- ggplot(incidence_data, aes(x = t))
+  if("forecast" %in% colnames(incidence_data)) {
+    g <- g + geom_point(aes(y = incidence, color = time_used_to_forecast)) +
+      scale_color_manual(breaks = c(F, T), values = c("black", "red"))
+  } else {
+    g <- g + geom_point(aes(y = incidence))
+  }
+  g <- g + scale_x_continuous("Week", breaks = incidence_data[label_index, "t"],
                        labels = incidence_data[label_index, "time_name"]) +
-    theme(axis.text.x= element_text(angle = 90)) 
+    theme(axis.text.x= element_text(angle = 90),
+          legend.position = "none") 
   if(log_scale) {
     g <- g + scale_y_log10("incidence")
   }
@@ -126,6 +133,10 @@ extract_forecasted_points <- function(lm_output, incidence_data, log_transform) 
     forecasted_points <- exp(forecasted_points)
   }
   forecasted_points <- c(rep(NA, last_timepoint_used), forecasted_points)
+  
+  time_used_to_forecast <- rep(FALSE, nrow(incidence_data))
+  time_used_to_forecast[lm_output$model$t] <- TRUE
+  incidence_data$time_used_to_forecast <- time_used_to_forecast
   incidence_data$forecast <- forecasted_points
   incidence_data
 }
