@@ -33,7 +33,7 @@
 #' @export
 #' 
 extract_incidence <- function(flu_data,
-                              country_code = "USA",
+                              country_code = "ISR",
                               year = 2016) {
   flu_data <- as.data.frame(flu_data)
   year_names <- rownames(flu_data)
@@ -54,6 +54,38 @@ extract_incidence <- function(flu_data,
                                incidence = incidence)
   return(incidence_data)
 }
+
+#' #' plots the incidence
+#' #' 
+#' #' \code{plot_incidence_all} plots the incidence for a given country (all years)
+#' #' 
+#' #' @param flu_data matrix with flu incidence data
+#' #' @param country_code character vector of length 1: 3-letter country code
+#' #' @return ggplot object
+#' #' @import ggplot2
+#' #' @export
+#' plot_incidence_all <- function(flu_data, country_code = "ISR") {
+#'   
+#'   years <- seq(2010, 2016)
+#'   all_incidence <- lapply(years, function(x) extract_incidence(flu_data,
+#'                                             country_code = country_code,
+#'                                                     year = x))
+#'   browser()
+#'   label_with_season <- function(df, label) {
+#'     df$season <- label
+#'     df
+#'   }
+#'   all_incidence <- Map(label_with_season, all_incidence, years)
+#'   all_incidence <- do.call(rbind, all_incidence)
+#'   browser()
+#'   # label_x_axis_every <- 5
+#'   # label_index <- seq(1, nrow(incidence_data), by = label_x_axis_every)
+#'   g <- ggplot(all_incidence, aes(x = t))
+#'   # if the data frame contains a forecast, plot the data points used to
+#'   # forecast in read, and the rest in black
+#'     g <- g + geom_line(aes(y = incidence, color = season))
+#'   return(g)
+#' }
 
 #' plots the incidence
 #' 

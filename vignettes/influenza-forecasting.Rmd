@@ -4,7 +4,7 @@ author: "Steven Riley"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{influenza-forecasting}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -30,16 +30,16 @@ To begin, please do the following (see code chunk in next paragraph):
 1. Check that your R installation has the package `devtools` installed by typing `library(devtools)` and making sure there are no error messages.
 2. Install the latest version of the package `idd` with the command `install_github("c97sr/idd")`
 3. Load the package with `library(idd)`
-4. Reproduce this document with the command `vignette(influenza-forecasting)`
+4. Reproduce this document with the command `vignette("influenza-forecasting")` Note by Ada: doesn't work?
 5. Set up an answer document in word and make sure you can copy and paste charts from R to word
 
 
 Enter the following commands:
-```{r setup, include=FALSE}
+```{r setup, eval=FALSE}
 devtools::load_all()
 ```
 
-```{r setup students, eval=FALSE}
+```{r setup students}
 devtools::install_github("c97sr/idd")
 library(idd)
 ```
