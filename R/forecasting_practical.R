@@ -1,4 +1,6 @@
-# Copyright Steven Riley (sr@stevenriley.net)
+# Copyright Steven Riley (sr@stevenriley.net), 
+# Caroline Walters (c.e.walters6@gmail.com),
+# Ada Yan (ada.w.yan@gmail.com)
 #
 # This file is part of the library idd.
 #
@@ -100,14 +102,15 @@ plot_incidence <- function(incidence_data, log_scale = FALSE) {
   label_x_axis_every <- 5
   label_index <- seq(1, nrow(incidence_data), by = label_x_axis_every)
   g <- ggplot(incidence_data, aes(x = t))
-  # if the data frame contains a forecast, plot the data points used to
-  # forecast in red, and the rest in black
-  if("forecast" %in% colnames(incidence_data)) {
-    g <- g + geom_point(aes(y = incidence, color = time_used_to_forecast)) +
+  # if the data frame contains a prediction, plot the data points used to
+  # predict in red, and the rest in black
+  if("prediction" %in% colnames(incidence_data)) {
+    g <- g + geom_point(aes(y = incidence, color = time_used_to_predict),
+                        na.rm = TRUE) +
       scale_color_manual(breaks = c(F, T), values = c("black", "red"))
   } else {
     # otherwise plot all data points in black
-    g <- g + geom_point(aes(y = incidence))
+    g <- g + geom_point(aes(y = incidence), na.rm = TRUE)
   }
   g <- g + scale_x_continuous("Week", breaks = incidence_data[label_index, "t"],
                               labels = incidence_data[label_index, "time_name"]) +
@@ -116,9 +119,9 @@ plot_incidence <- function(incidence_data, log_scale = FALSE) {
   if(log_scale) {
     g <- g + scale_y_log10("incidence")
   }
-  # if the data frame contains a forecast, plot it in blue
-  if("forecast" %in% colnames(incidence_data)) {
-    g <- g + geom_point(aes(y = forecast), color = "blue")
+  # if the data frame contains a prediction, plot it in blue
+  if("prediction" %in% colnames(incidence_data)) {
+    g <- g + geom_point(aes(y = prediction), color = "blue", na.rm = TRUE)
   }
   return(g)
 }
@@ -195,47 +198,47 @@ linear_regression <- function(incidence_data,
   return(linear_regression_output)
 }
 
-#' extract forecasted points from linear regression object
+#' extract predicted points from linear regression object
 #' 
-#' \code{extract_forecasted_points} takes the linear regression object
+#' \code{extract_predicted_points} takes the linear regression object
 #' returned by \code{linear_regression} and extracts model predictions
 #' 
 #' @param lm_output linear regression object returned by \code{linear_regression}
 #' @param incidence_data incidence data extracted by \code{extract_incidence}
-#' @param weeks_ahead numeric vector of length 1: number of weeks to forecast ahead
+#' @param weeks_ahead numeric vector of length 1: number of weeks to predict ahead
 #' @param log_transform logical vector of length 1: if TRUE, linear 
 #' regression was performed on log transformed data, otherwise linear regression
 #' was performed on original data
 #' @return data frame with predicted points and original data
 #' @export
 #' 
-extract_forecasted_points <- function(lm_output, incidence_data, weeks_ahead,
+extract_predicted_points <- function(lm_output, incidence_data, weeks_ahead,
                                       log_transform) {
   
   # extract the intercept and gradient from the linear regression output
   intercept <- lm_output$coefficients[["(Intercept)"]]
   gradient <- lm_output$coefficients[["t"]]
   
-  # find the current week (last timepoint used for forecasting)
+  # find the current week (last timepoint used for predicting)
   last_timepoint_used <- lm_output$model$t[length(lm_output$model$t)]
   if(missing(weeks_ahead)) {
     weeks_ahead <- nrow(incidence_data) - last_timepoint_used
   }
-  # find the times for which we did the forecast
-  times_to_forecast <- seq_len(weeks_ahead) + last_timepoint_used
-  forecasted_points <- intercept + gradient * times_to_forecast
+  # find the times for which we did the prediction
+  times_to_predict <- seq_len(weeks_ahead) + last_timepoint_used
+  predicted_points <- intercept + gradient * times_to_predict
   if(log_transform) {
-    forecasted_points <- exp(forecasted_points)
+    predicted_points <- exp(predicted_points)
   }
   
-  # make a column in the data frame recording which time points were used to forecast
-  time_used_to_forecast <- rep(FALSE, nrow(incidence_data))
-  time_used_to_forecast[lm_output$model$t] <- TRUE
-  incidence_data$time_used_to_forecast <- time_used_to_forecast
+  # make a column in the data frame recording which time points were used to predict
+  time_used_to_predict <- rep(FALSE, nrow(incidence_data))
+  time_used_to_predict[lm_output$model$t] <- TRUE
+  incidence_data$time_used_to_predict <- time_used_to_predict
   
-  # paste the forecasted data points at the right times into the data frame
-  incidence_data$forecast <- rep(NA, nrow(incidence_data))
-  incidence_data$forecast[last_timepoint_used + seq_len(weeks_ahead)] <- forecasted_points
+  # paste the predicted data points at the right times into the data frame
+  incidence_data$prediction <- rep(NA, nrow(incidence_data))
+  incidence_data$prediction[last_timepoint_used + seq_len(weeks_ahead)] <- predicted_points
   return(incidence_data)
 }
 
@@ -283,7 +286,7 @@ calc_log_likelihood <- function(data, model_prediction) {
 #' @param current_week numeric vector of length 1: week number of the current week
 #' @param starting_week numeric vector of length 1: 
 #' guess for week number when the epidemic started. Use data from starting week
-#' to current week to forecast
+#' to current week to predict
 #' @param R_0_min numeric vector of length 1: lower bound of R_0 values over
 #' which to construct likelihood profile
 #' @param R_0_max numeric vector of length 1: upper bound of R_0 values over
@@ -295,7 +298,7 @@ calc_log_likelihood <- function(data, model_prediction) {
 #' 
 likelihood_profile_seir <- function(incidence_data, current_week, starting_week, R_0_min, R_0_max) {
   
-  # extract incidence data for weeks used to forecast
+  # extract incidence data for weeks used to predict
   starting_week_index <- extract_week_index(starting_week, incidence_data$time_name)
   current_week_index <- extract_week_index(current_week, incidence_data$time_name)
   
@@ -344,7 +347,7 @@ plot_likelihood_profile <- function(likelihood_profile_output) {
 #' @param current_week numeric vector of length 1: week number of the current week
 #' @param starting_week numeric vector of length 1: 
 #' guess for week number when the epidemic started. Use data from starting week
-#' to current week to forecast
+#' to current week to predict
 #' @param R_0_min numeric vector of length 1: lower bound of R_0 values over
 #' which to search
 #' @param R_0_max numeric vector of length 1: upper bound of R_0 values over
@@ -353,7 +356,7 @@ plot_likelihood_profile <- function(likelihood_profile_output) {
 #' @export
 fit_seir <- function(incidence_data, current_week, starting_week, R_0_min, R_0_max) {
   
-  # extract incidence data for weeks used to forecast
+  # extract incidence data for weeks used to predict
   starting_week_index <- extract_week_index(starting_week, incidence_data$time_name)
   current_week_index <- extract_week_index(current_week, incidence_data$time_name)
   
@@ -369,11 +372,6 @@ fit_seir <- function(incidence_data, current_week, starting_week, R_0_min, R_0_m
     log_likelihood <- calc_log_likelihood(incidence_data$incidence, model_prediction)
     return(log_likelihood)
   }
-  # max_likelihood_output <- optimise(c(1,5), evaluate_model_and_calc_negative_log_likelihood)
-  # max_likelihood_output <- optimise(c(1,5), evaluate_model_and_calc_negative_log_likelihood,
-  #                                method = "L-BFGS-B",
-  #                                lower = c(1, 0.1, 0.1, log10(1), log10(1e-4)),
-  #                                upper = c(5, 5, 5, log10(5e6), log10(1)))
   
   # find the value of R_0 which maximises the log likelihood.
   # NOte that the optimise function tries to minimise, so we need the minus sign.
@@ -382,44 +380,44 @@ fit_seir <- function(incidence_data, current_week, starting_week, R_0_min, R_0_m
   return(R_0)
 }
 
-#' extract forecasted points for SEIR model
+#' extract predicted points for SEIR model
 #' 
-#' \code{extract_forecasted_points_seir} takes the R_0
+#' \code{extract_predicted_points_seir} takes the R_0
 #' returned by \code{fit_seir} and extracts model predictions
 #' 
 #' @param R_0 numeric vector of length 1: basic reproduction number
 #' @param incidence_data data frame extracted by \code{extract_incidence}
 #' @param starting_week numeric vector of length 1: 
 #' guess for week number when the epidemic started. Use data from starting week
-#' to current week to forecast
+#' to current week to predict
 #' @param current_week numeric vector of length 1: week number of the current week
-#' @param weeks_ahead numeric vector of length 1: number of weeks to forecast ahead
+#' @param weeks_ahead numeric vector of length 1: number of weeks to predict ahead
 #' @return data frame with predicted points and original data
 #' @export
 #' 
-extract_forecasted_points_seir <- function(R_0, incidence_data, 
+extract_predicted_points_seir <- function(R_0, incidence_data, 
                                            current_week,
                                            starting_week, 
                                            weeks_ahead) {
-  # find the times for which we did the forecast
+  # find the times for which we did the prediction
   starting_week_index <- extract_week_index(starting_week, incidence_data$time_name)
   current_week_index <- extract_week_index(current_week, incidence_data$time_name)
   
-  # make a column in the data frame recording which time points were used to forecast
-  time_used_to_forecast <- rep(FALSE, nrow(incidence_data))
+  # make a column in the data frame recording which time points were used to predict
+  time_used_to_predict <- rep(FALSE, nrow(incidence_data))
 
-  time_used_to_forecast[seq(starting_week_index, current_week_index)] <- TRUE
-  incidence_data$time_used_to_forecast <- time_used_to_forecast
+  time_used_to_predict[seq(starting_week_index, current_week_index)] <- TRUE
+  incidence_data$time_used_to_predict <- time_used_to_predict
   
   # solve the SEIR model from the starting week
   n_weeks_prior <- current_week_index - starting_week_index
-  forecasted_points <- solve_seir_wrapper(R_0, weeks_ahead + n_weeks_prior)
-  # exclude points before current week from forecast
-  forecasted_points <- forecasted_points[-seq_len(n_weeks_prior + 1)]
+  predicted_points <- solve_seir_wrapper(R_0, weeks_ahead + n_weeks_prior)
+  # exclude points before current week from prediction
+  predicted_points <- predicted_points[-seq_len(n_weeks_prior + 1)]
   
-  # paste the forecasted data points at the right times into the data frame
-  incidence_data$forecast <- rep(NA, nrow(incidence_data))
-  incidence_data$forecast[current_week_index + seq_along(forecasted_points)] <- forecasted_points
+  # paste the predicted data points at the right times into the data frame
+  incidence_data$prediction <- rep(NA, nrow(incidence_data))
+  incidence_data$prediction[current_week_index + seq_along(predicted_points)] <- predicted_points
   return(incidence_data)
 }
 
@@ -488,28 +486,44 @@ solve_seir_wrapper <- function(R_0, n_weeks) {
   solve_seir_model(R_0, latent_period, infectious_period, N, I_0, n_weeks) * reporting_rate
 }
 
-#' calculate proportion of forecast points which are within threshold
+#' calculate proportion of prediction points which are within threshold
 #' 
-#' \code{calc_forecast_accuracy} calculates the proportion of forecast points 
+#' \code{calc_prediction_accuracy} calculates the proportion of prediction points 
 #' which are within a given percentage threshold of the observed incidence
 #' 
-#' @param forecast_df forecast data frame returned by 
-#' \code{extract_forecasted_points} or \code{extract_forecasted_points_seir}
+#' @param prediction_df prediction data frame returned by 
+#' \code{extract_predicted_points} or \code{extract_predicted_points_seir}
 #' @param tolerance numeric vector of length 1: parameter specifying range
-#' within which the forecasted incidence should fall.  For example, if 
-#' tolerance = 0.25, a forecasted point is deemed to be accurate if the 
-#' forecasted incidence is between 75% and 125% of the observed incidence.
-#' @return numeric vector of length 1: the proportion of forecast points 
+#' within which the predicted incidence should fall.  For example, if 
+#' tolerance = 0.25, a predicted point is deemed to be accurate if the 
+#' predicted incidence is between 75% and 125% of the observed incidence.
+#' @return numeric vector of length 1: the proportion of prediction points 
 #' which are within a given percentage threshold of the observed incidence
 #' @export
 #' 
-calc_forecast_accuracy <- function(forecast_df, tolerance = 0.25) {
-  # number of forecasted points within threshold
-  n_accurate_points <- sum(forecast_df$forecast < forecast_df$incidence * (1 + tolerance) &
-                           forecast_df$forecast > forecast_df$incidence * (1 - tolerance), 
+calc_prediction_accuracy <- function(prediction_df, tolerance = 0.25) {
+  # number of predicted points within threshold
+  n_accurate_points <- sum(prediction_df$prediction < prediction_df$incidence * (1 + tolerance) &
+                           prediction_df$prediction > prediction_df$incidence * (1 - tolerance), 
                            na.rm = TRUE)
-  # number of forecasted points
-  n_points <- sum(!is.na(forecast_df$forecast) & !is.na(forecast_df$incidence))
+  # number of predicted points
+  n_points <- sum(!is.na(prediction_df$prediction) & !is.na(prediction_df$incidence))
   proportion <- n_accurate_points / n_points
   return(proportion)
+}
+
+#' extract subset of prediction data frame containing predictions
+#' #' 
+#' \code{calc_prediction_accuracy} calculates the proportion of prediction points 
+#' which are within a given percentage threshold of the observed incidence
+#' 
+#' @param prediction_df prediction data frame returned by 
+#' \code{extract_predicted_points} or \code{extract_predicted_points_seir}
+#' @return data frame: incidence and prediction for time points where data is 
+#' available
+#' @export
+#' 
+extract_subset_prediction <- function(prediction_df) {
+  prediction_df[!is.na(prediction_df$incidence) & !is.na(prediction_df$prediction),
+              -which((colnames(prediction_df) == "time_used_to_predict"))]
 }

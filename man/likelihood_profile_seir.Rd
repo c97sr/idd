@@ -14,7 +14,7 @@ likelihood_profile_seir(incidence_data, current_week, starting_week, R_0_min,
 
 \item{starting_week}{numeric vector of length 1: 
 guess for week number when the epidemic started. Use data from starting week
-to current week to forecast}
+to current week to predict}
 
 \item{R_0_min}{numeric vector of length 1: lower bound of R_0 values over
 which to construct likelihood profile}
