@@ -1,5 +1,5 @@
 ---
-title: "Influenze Forecasting"
+title: "Influenza Forecasting"
 author: "Steven Riley"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
