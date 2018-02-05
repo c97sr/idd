@@ -37,7 +37,7 @@ linear_regression_output <- linear_regression(incidence_data,
 # extract forecasted points from linear regression -- forecast 5 weeks ahead
 forecast_df <- extract_forecasted_points(linear_regression_output, 
                                          incidence_data,
-                                         weeks_ahead = 5,
+                                         weeks_ahead = 1,
                                          log_transform = FALSE)
 
 # plot forecast
@@ -70,7 +70,7 @@ print(calc_forecast_accuracy(forecast_df))
 # perform linear regression starting from calendar week 47,
 # using data from 4 weeks prior, log transforming data
 linear_regression_output <- linear_regression(incidence_data,
-                                              current_week = 47,
+                                              current_week = 49,
                                               n_weeks_prior = 4,
                                               log_transform = TRUE)
 
@@ -95,7 +95,7 @@ print(calc_forecast_accuracy(forecast_df))
 # fit seir model
 # first, plot likelihood profile to determine reasonable bounds for maximum likelihood algorithm
 # the likelihood profile plots the log likelihood over a range of R_0
-current_week <- 47
+current_week <- 49
 starting_week <- 37 # our guess for the start time of the epidemic. We assume that
 # the epidemic starts with 100 infectious individuals at this time.
 R_0_min <- 1
