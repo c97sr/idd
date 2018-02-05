@@ -26,7 +26,8 @@ After successfully completing this practical, you should be able to:
 
 **Using R**:  We will continue using R in this practical session.  You will be provided with the R code for the practical.
 
-To begin, please do the following (see code chunk in next paragraph):
+To begin, please do the following
+
 1. Check that your R installation has the package `devtools` installed by typing `library(devtools)` and making sure there are no error messages.
 2. Install the latest version of the package `idd` with the command `install_github("c97sr/idd")`
 3. Load the package with `library(idd)`
@@ -35,11 +36,11 @@ To begin, please do the following (see code chunk in next paragraph):
 
 
 Enter the following commands:
-```{r setup, message=FALSE}
+```{r setup, include=FALSE, eval = FALSE}
 devtools::load_all()
 ```
 
-```{r setup students, eval = FALSE}
+```{r setup students, include = FALSE}
 devtools::install_github("c97sr/idd")
 library(idd)
 ```
