@@ -1,6 +1,6 @@
 ---
 title: "Influenza Forecasting"
-author: "Steven Riley"
+author: "Steven Riley, Caroline Walters, Ada Yan"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -8,36 +8,35 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-Test
+
 
 ## Objectives
 
 After successfully completing this practical, you should be able to:
 
-* Understand the objectives of forecasting
-* Understand how accuracy in forecasting is assessed
-* Be able to use a linear model to make a forecast (appropriate R code provided)
-* Be able to use a simple mechanistic model to make a forecast (appropriate R code provided)
-* Be able to use a historical null model as a benchmark
+* Understand the objectives of forecasting.
+* Understand how accuracy in forecasting is assessed.
+* Be able to use a linear model to make a forecast (appropriate R code provided).
+* Be able to use a simple mechanistic model to make a forecast (appropriate R code provided).
+* Be able to use a historical null model as a benchmark.
 
 ## Format
 
 **Timing**:  We have sufficient time to meet our objectives, however, we expect people to progress at different rates depending on their familiarity with the concepts and their experience with R.  Extension questions are included for anyone who finishes early, or for you to look over outside of this practical.  At various points in time we will come together as a group to review answers and to discuss issues that arise. 
 
-**Approach**: This practical is designed to be completed as an individual activity, however discussion with others is encouraged.  The initial questions are very specific and are designed to help you familiarise yourself with the model and its implementation. As you move through the practical, the questions become more and more open-ended.
+**Approach**: This practical is designed to be completed individually, however discussion with others is encouraged.  The initial questions are quite specific and are designed to help you familiarise yourself with the material. The questions become more and more open-ended as you progress through the practical.
 
 **Using R**:  We will continue using R in this practical session.  You will be provided with the R code for the practical.
 
-To begin, please do the following
+To begin, please do the following:
 
-1. Check that your R installation has the package `devtools` installed by typing `library(devtools)` and making sure there are no error messages.
+1. Check that your R installation has the package `devtools` installed by typing `library(devtools)` and making sure that there are no error messages.
 2. Install the latest version of the package `idd` with the command `install_github("c97sr/idd")`
 3. Load the package with `library(idd)`
-4. Reproduce this document with the command `vignette("influenza-forecasting")` Note by Ada: doesn't work?
-5. Set up an answer document in word and make sure you can copy and paste charts from R to word
+4. Reproduce this document with the command `vignette("influenza-forecasting")` 
+5. Set up an answer document in Word (or similar text editor) and make sure you can copy and paste charts from R to Word.
 
 
-Enter the following commands:
 ```{r setup, include=FALSE, eval = FALSE}
 devtools::load_all()
 ```
@@ -55,7 +54,7 @@ To look at the source code for the functions, type the function name by itself (
 
 ## Background to the Task
 
-You will be using WHO data showing weekly influenza incidence from many different countries.  For a specific country you will be shown the weekly incidence for a period of 52 weeks.  Using a small subset of this data, you will be predicting the incidence for the coming weeks and comparing your predictions with the actual data. You will investigate different models.
+You will be using WHO data showing weekly influenza-like illness incidence from many different countries.  For a specific country you will be shown the weekly incidence for a period of 52 weeks.  Using a small subset of this data, you will be predicting the incidence for the coming weeks and comparing your predictions with the actual data. You will investigate different models.
 
 
 ## 1. Initial investigation of the data
@@ -68,11 +67,11 @@ data("fluIliCountryData")
 plot_incidence_all(fluIliCountryData, "ISR")
 ```
 
-Q: How many weekly incidence reports do you have in your dataset?
+**Qu. 1.1**: How many weekly incidence reports do you have in your dataset?
 
-Q: What month(s) and years(s) does the dataset contain?
+**Qu. 1.2**: What month(s) and years(s) does the dataset contain?
 
-Q: What differences do you see across the years?
+**Qu. 1.3**: What differences do you see across the years?
 
 Now plot the weekly incidence data for Israel in 2016.
 
@@ -86,10 +85,12 @@ plot_incidence(incidence_data, log_scale = FALSE)
 
 We define that an epidemic is occurring if the incidence for a given week exceeds a threshold.
 For the purposes of this practical, we choose this threshold to be 250 individuals.
-The onset time of the epidemic is then the first week during which the incidence exceeds the threshold.
-The duration of the epidemic is the time between the last week the incidence exceeds the threshold, and the first week during which the incidence exceeds the threshold (the onset time).
 
-Q: for each year (2010-2016), by visual inspection of the plot, identify the onset time, peak time, peak incidence and duration of the epidemic.  
+The onset time of the epidemic is then the first week during which the incidence exceeds the threshold.
+
+The duration of the epidemic is the time between when the epidemic first exceeds the threshold (onset time) up to the final week that the incidence exceeds the threshold.
+
+**Qu. 1.4**: for each year (2010-2016), by visual inspection of the plot, identify the onset time, peak time, peak incidence and duration of the epidemic.  
 Record your results in a table.
 
 We will now use our knowledge of the real situation to explore different forecast models.
@@ -110,7 +111,7 @@ linear_regression_output <- linear_regression(incidence_data,
 print(linear_regression_output)
 ```
 
-Q. What are the meanings of the values for `intercept` and `gradient`?
+**Qu. 2.1** What are the meanings of the values for `intercept` and `gradient`?
 
 Now we use the fitted model to forecast the incidence for future weeks.
 Run the code
@@ -118,32 +119,49 @@ Run the code
 ```{r}
 forecast_df <- extract_forecasted_points(linear_regression_output, 
                                          incidence_data,
-                                         weeks_ahead = 1,
+                                         weeks_ahead = 8,
                                          log_transform = FALSE)
 plot_incidence(forecast_df)
 ```
 
 This gives us a plot with a forecast for 1 week ahead. Save the plot.
 
-Q: What do you think the black, red and blue points represent on this chart?
+**Qu. 2.2** What do you think the black, red and blue points represent on this chart?
 
-Q: Does the model look to be giving a good prediction?
+**Qu. 2.3** Does the model look to be giving a good prediction?
 
 Change the code to get a plot for 2 weeks ahead.
-*Note: we have stored information in for our plot in an object called `forecast_df`. When you change the code for 2 weeks ahead, this will overwrite `forecast_df `.  This is not a problem, however if you would like to save the information for different plots then you must create new objects, eg `forecast_df2`.*
+*Note: we have stored information in for our plot in an object called `forecast_df`. When you change the code for 2 weeks ahead, this will overwrite `forecast_df `.  This is not a problem, however if you would like to save the information for different plots then you must create new objects, e.g. `forecast_df2`.*
 
 Now look at 3, 4, 5,... weeks ahead.  Remember to save any plots that you want to keep.
 
-Q: Where, if anywhere, do you think the model gives a good prediction?  In qualitative terms, does accuracy change over time? If so, how?
+**Qu. 2.4** Where, if anywhere, do you think the model gives a good prediction?  In qualitative terms, does prediction accuracy change over time? If so, how?
 
 
-### How can we assess if a forecast is accurate?
+### How can we assess if a prediction is accurate?
 
-From the previous question you may have developed a personal view on when the model is good, however we want to have a formal way of defining good.  We can consider if a predication point lies within 25% either way of the actual value.  We can do this for all prediction points and then consider the proportion of points that are within this tolerance.
+From the previous question you may have developed a personal view on when the model is \'good\', however we want to have a formal way of defining 'good'.  We can consider if a predication point lies within 25% either way of the actual value.  We can do this for all prediction points and then consider the proportion of points that are within this tolerance.
+
+Consider the example of making predictions at week 49, using data from the previous 4 weeks.  We want to make predictions about the coming 8 weeks.
 
 ```{r}
-calc_forecast_accuracy(forecast_df)
+linear_regression_output <- linear_regression(incidence_data,
+                              current_week = 49,
+                              n_weeks_prior = 4,
+                              log_transform = FALSE)
+print(linear_regression_output)
+
+forecast_df <- extract_forecasted_points(linear_regression_output, 
+                                         incidence_data,
+                                         weeks_ahead = 8,
+                                         log_transform = FALSE)
+plot_incidence(forecast_df)
+
+forecast_df
 ```
+
+**Qu. 2.5** 
+
 
 Q Vary the `weeks_ahead` in `forecast_df` and note down the different accuracies.  Begin by looking at 1, 3, 6, 9, and 12 weeks ahead.
 
