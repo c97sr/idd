@@ -8,6 +8,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+Test
 
 ## Objectives
 
@@ -42,7 +43,7 @@ devtools::load_all()
 ```
 
 ```{r setup students, include = FALSE}
-devtools::install_github("c97sr/idd", build_vignettes = TRUE)
+devtools::install_github("c97sr/idd", build_vignettes = FALSE)
 library(idd)
 ```
 
