@@ -404,3 +404,27 @@ solve_seir_wrapper <- function(R_0, n_weeks) {
   reporting_rate <- 0.006
   solve_seir_model(R_0, latent_period, infectious_period, N, I_0, n_weeks) * reporting_rate
 }
+
+#' calculate proportion of forecast points which are within threshold
+#' 
+#' \code{calc_forecast_accuracy} calculates the proportion of forecast points 
+#' which are within a given percentage threshold of the observed incidence
+#' 
+#' @param forecast_df forecast data frame returned by 
+#' \code{extract_forecasted_points} or \code{extract_forecasted_points_seir}
+#' @param tolerance numeric vector of length 1: parameter specifying range
+#' within which the forecasted incidence should fall.  For example, if 
+#' tolerance = 0.25, a forecasted point is deemed to be accurate if the 
+#' forecasted incidence is between 75% and 125% of the observed incidence.
+#' @return numric vector of length 1: the proportion of forecast points 
+#' which are within a given percentage threshold of the observed incidence
+#' @export
+#' 
+calc_forecast_accuracy <- function(forecast_df, tolerance = 0.25) {
+  n_accurate_points <- sum(forecast_df$forecast < forecast_df$incidence * (1 + tolerance) &
+                           forecast_df$forecast > forecast_df$incidence * (1 - tolerance), 
+                           na.rm = TRUE)
+  n_points <- sum(!is.na(forecast_df$forecast) & !is.na(forecast_df$incidence))
+  proportion <- n_accurate_points / n_points
+  return(proportion)
+}
