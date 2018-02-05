@@ -160,29 +160,25 @@ plot_incidence(forecast_df)
 forecast_df
 ```
 
-**Qu. 2.5** 
+MIGHT WANT TO SUBSET THE DATAFRAME TO RELEVANT ROWS ONLY
+PLEASE CHECK THESE QUESTIONS
 
-
-Q Vary the `weeks_ahead` in `forecast_df` and note down the different accuracies.  Begin by looking at 1, 3, 6, 9, and 12 weeks ahead.
-
-Now repeat this forecasting process but starting week 49.  In the code to produce `linear_regression_output`, change `current_week` to 49.  Keep a copy of the results and compare them to your results for starting week 47.
-
-Q  Is your forecast any better?
+**Qu. 2.5** Look at the real data for the prediction weeks. Calculate the accuracy interval for each data point: lower bound is 0.75 times the incidence; upper bound is 1.25 times the incidence. Record the information in a table. Now look to see if the prediction value lies with the accuracy interval range. Calculate the proportion of of points where this holds.
 
 Now repeat this forecasting process but using data from more weeks prior.  In the code to produce `linear_regression_output`, change `n_weeks_prior` to 8.  Keep a copy of the results and compare them to your results using data from 4 weeks prior.
 
-Q  Is your forecast any better?
-
-For week 49, what was your best forecast?  For how many weeks is it accurate?
+**Qu. 2.6** For week 49, what was your best forecast?  For how many weeks is it accurate?
 
 ## 3. Linear Regression on Log Incidence
+
+I HAVE CHANGED START WEEK TO 49. IF THIS IS STUPID PLEASE CHANGE BACK BUT BE AWARE THAT CURRENT ACCURACY SECTION USES 49.
 
 We will now repeat what we have just done but will perform linear regression on the log transform of the data.
 
 Run the code
 ```{r}
 linear_regression_output <- linear_regression(incidence_data,
-                              current_week = 47,
+                              current_week = 49,
                               n_weeks_prior = 4,
                               log_transform = TRUE)
 
@@ -192,10 +188,14 @@ forecast_df <- extract_forecasted_points(linear_regression_output,
                                          log_transform = TRUE)
 
 plot_incidence(forecast_df)
-calc_forecast_accuracy(forecast_df)
 ```
 
 As before, change the number of weeks ahead that you forecast, and the number of previous data points to include.
+
+Code to let you calculate forecast accuracy:
+```{r}
+calc_forecast_accuracy <- function(forecast_df)
+```
 
 Q: How do forecasts with the log transform differ qualitatively from forecasts without the log transform?
 
