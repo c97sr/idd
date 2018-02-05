@@ -12,6 +12,7 @@ vignette: >
 ## Objectives
 
 After successfully completing this practical, you should be able to:
+
 * Understand the objectives of forecasting
 * Understand how accuracy in forecasting is assessed
 * Be able to use a linear model to make a forecast (appropriate R code provided)
@@ -41,7 +42,7 @@ devtools::load_all()
 ```
 
 ```{r setup students, include = FALSE}
-devtools::install_github("c97sr/idd")
+devtools::install_github("c97sr/idd", build_vignettes = TRUE)
 library(idd)
 ```
 
@@ -70,8 +71,6 @@ Q: How many weekly incidence reports do you have in your dataset?
 
 Q: What month(s) and years(s) does the dataset contain?
 
-Q: What does each epidemic curve look like?
-
 Q: What differences do you see across the years?
 
 Now plot the weekly incidence data for Israel in 2016.
@@ -85,11 +84,11 @@ plot_incidence(incidence_data, log_scale = FALSE)
 ```
 
 We define that an epidemic is occurring if the incidence for a given week exceeds a threshold.
-For the purposes of this practical, we choose this threshold to be x individuals.
+For the purposes of this practical, we choose this threshold to be 250 individuals.
 The onset time of the epidemic is then the first week during which the incidence exceeds the threshold.
 The duration of the epidemic is the time between the last week the incidence exceeds the threshold, and the first week during which the incidence exceeds the threshold (the onset time).
 
-Q: for each year (2010-2016), identify the onset time, peak time, peak incidence and duration of the epidemic.  
+Q: for each year (2010-2016), by visual inspection of the plot, identify the onset time, peak time, peak incidence and duration of the epidemic.  
 Record your results in a table.
 
 We will now use our knowledge of the real situation to explore different forecast models.
@@ -125,7 +124,7 @@ plot_incidence(forecast_df)
 
 This gives us a plot with a forecast for 1 week ahead. Save the plot.
 
-Q: What are the black, red and blue points showing?
+Q: What do you think the black, red and blue points represent on this chart?
 
 Q: Does the model look to be giving a good prediction?
 
@@ -134,7 +133,7 @@ Change the code to get a plot for 2 weeks ahead.
 
 Now look at 3, 4, 5,... weeks ahead.  Remember to save any plots that you want to keep.
 
-Q: Where, if anywhere, do you think the model gives a good prediction?  Does accuracy change over time? If so, how?
+Q: Where, if anywhere, do you think the model gives a good prediction?  In qualitative terms, does accuracy change over time? If so, how?
 
 
 ### How can we assess if a forecast is accurate?
@@ -155,7 +154,9 @@ Now repeat this forecasting process but using data from more weeks prior.  In th
 
 Q  Is your forecast any better?
 
-## 3. Log Linear Regression Model
+For week 49, what was your best forecast?  For how many weeks is it accurate?
+
+## 3. Linear Regression on Log Incidence
 
 We will now repeat what we have just done but will perform linear regression on the log transform of the data.
 

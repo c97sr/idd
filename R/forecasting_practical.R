@@ -101,7 +101,7 @@ plot_incidence <- function(incidence_data, log_scale = FALSE) {
   label_index <- seq(1, nrow(incidence_data), by = label_x_axis_every)
   g <- ggplot(incidence_data, aes(x = t))
   # if the data frame contains a forecast, plot the data points used to
-  # forecast in read, and the rest in black
+  # forecast in red, and the rest in black
   if("forecast" %in% colnames(incidence_data)) {
     g <- g + geom_point(aes(y = incidence, color = time_used_to_forecast)) +
       scale_color_manual(breaks = c(F, T), values = c("black", "red"))
