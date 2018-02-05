@@ -46,8 +46,8 @@ extract_incidence <- function(flu_data,
   time_name_vec <- year_names[seq(row_index_start, row_index_end)]
   
   incidence_data <- data.frame(t = seq_along(time_name_vec), 
-                        time_name = time_name_vec, 
-                        incidence = incidence)
+                               time_name = time_name_vec, 
+                               incidence = incidence)
   return(incidence_data)
 }
 
@@ -62,7 +62,7 @@ extract_incidence <- function(flu_data,
 #' @import ggplot2
 #' @export
 plot_incidence <- function(incidence_data, log_scale = FALSE) {
-
+  
   label_x_axis_every <- 5
   label_index <- seq(1, nrow(incidence_data), by = label_x_axis_every)
   g <- ggplot(incidence_data, aes(x = t))
@@ -73,7 +73,7 @@ plot_incidence <- function(incidence_data, log_scale = FALSE) {
     g <- g + geom_point(aes(y = incidence))
   }
   g <- g + scale_x_continuous("Week", breaks = incidence_data[label_index, "t"],
-                       labels = incidence_data[label_index, "time_name"]) +
+                              labels = incidence_data[label_index, "time_name"]) +
     theme(axis.text.x= element_text(angle = 90),
           legend.position = "none") 
   if(log_scale) {
@@ -96,14 +96,28 @@ plot_incidence <- function(incidence_data, log_scale = FALSE) {
 #' @export
 #' 
 subset_incidence_data <- function(incidence_data, current_week, n_weeks_prior) {
-  week_string <- as.character(current_week)
-  if(current_week < 10) {
-    week_string <- paste0("0", week_string)
-  }
-  end_row <- grep(paste0("-", week_string), incidence_data$time_name)
+  end_row <- extract_week_index(current_week, incidence_data$time_name)
   start_row <- end_row - n_weeks_prior
   incidence_data <- incidence_data[seq(start_row, end_row),]
   return(incidence_data)
+}
+
+#' extract index of week number from week names
+#' 
+#' \code{extract_week_index} extract index of week number from week names
+#' 
+#' @param week_no numeric vector of length 1: week number of the week of interest
+#' @param time_name character vector with names of weeks
+#' @return numeric vector of length 1: index
+#' @export
+#' 
+extract_week_index <- function(week_no, time_name) {
+  week_string <- as.character(week_no)
+  if(week_no < 10) {
+    week_string <- paste0("0", week_string)
+  }
+  week_index <- grep(paste0("-", week_string), time_name)
+  return(week_index)
 }
 
 #' performs linear regression for a given country and year
@@ -126,7 +140,7 @@ linear_regression <- function(incidence_data,
                               current_week = 47,
                               n_weeks_prior = 4,
                               log_transform = TRUE) {
-
+  
   incidence_data <- subset_incidence_data(incidence_data, current_week,
                                           n_weeks_prior)
   
@@ -190,64 +204,203 @@ extract_forecasted_points <- function(lm_output, incidence_data, weeks_ahead,
 calc_log_likelihood <- function(data, model_prediction) {
   stopifnot(length(data) == length(model_prediction) &&
               identical(data, round(data)))
-  log_likelihood <- sum(dpois(data, model_prediction, log = TRUE))
+  is_na_data <- which(is.na(data))
+  if(length(is_na_data) > 0) {
+    data <- data[-is_na_data]
+    model_prediction <- model_prediction[-is_na_data]
+  }
+  model_prediction[model_prediction < 1] <- 1
+  reporting_rate <- 0.006
+  log_likelihood <- sum(dpois(round(data / reporting_rate), model_prediction/ reporting_rate, log = TRUE))
   return(log_likelihood)
 }
 
-#' simplified version of SEIR model with default inputs
+#' construct a likelihood profile for R_0 given data
 #' 
-#' \code{simple_comp_seir} is a simplified version of \code{comp_seir}
-#' with default inputs
+#' \code{likelihood_profile_seir} calculates the log likelihood of the model 
+#' given the data, for a range of R_0. The other parameters are fixed
 #' 
-#' @param R_0 numeric vector of length 1: basic reproduction number
-#' @return A list of two elements. The first is the incidence of infection
-#' and the second is the timepoints to which the incidence refers.
+#' @param incidence_data incidence data extracted by \code{extract_incidence}
+#' @param current_week numeric vector of length 1: week number of the current week
+#' @param starting_week numeric vector of length 1: 
+#' guess for week number when the epidemic started. Use data from starting week
+#' to current week to forecast
+#' @param R_0_min numeric vector of length 1: lower bound of R_0 values over
+#' which to construct likelihood profile
+#' @param R_0_max numeric vector of length 1: upper bound of R_0 values over
+#' which to construct likelihood profile
+#' @return a data frame with the following columns:
+#' R_0_vec: numeric vector of R_0 values which we're scanning over
+#' log_likelihood_vec: log likelihood for those values of R_0
 #' @export
-simple_comp_seir <- function(R_0) {
-  latent_period <- 1.6 # Cori et al. (2012) 10.1016/j.epidem.2012.06.001
-  infectious_period <- 1 # Cori et al. (2012) 10.1016/j.epidem.2012.06.001
-  pop_size <- 323.1e6 # USA population size 2016
-  model_output <- comp_seir(De=latent_period,
-            Tg=infectious_period + latent_period,
-            R0=R_0,
-            N=pop_size,
-            I0=10,
-            trickle=0,
-            trickleStart=0,
-            reprate=1,
-            dt=1,
-            R1=R_0,
-            t1=999,
-            R2=R_0,
-            t2=9999,
-            noTimeSteps=360,
-            noReals=1,
-            A=0,
-            deterministic=TRUE
-  )
-  return(model_output[c(1,2)])
+#' 
+likelihood_profile_seir <- function(incidence_data, current_week, starting_week, R_0_min, R_0_max) {
+  
+  starting_week_index <- extract_week_index(starting_week, incidence_data$time_name)
+  current_week_index <- extract_week_index(current_week, incidence_data$time_name)
+  
+  n_weeks_prior <- current_week_index - starting_week_index
+  
+  incidence_data <- subset_incidence_data(incidence_data, current_week,
+                                          n_weeks_prior)
+  
+  evaluate_model_and_calc_log_likelihood <- function(R_0) {
+    model_prediction <- solve_seir_wrapper(R_0, n_weeks_prior)
+    log_likelihood <- calc_log_likelihood(incidence_data$incidence, model_prediction)
+    return(log_likelihood)
+  }
+  
+  R_0_vec <- seq(R_0_min, R_0_max, length.out = 100)
+  log_likelihood_vec <- vapply(R_0_vec, evaluate_model_and_calc_log_likelihood, numeric(1))
+  likelihood_profile_output <- data.frame(R_0_vec = R_0_vec, 
+                                          log_likelihood_vec = log_likelihood_vec)
+  return(likelihood_profile_output)
 }
 
-#' #' fit the SEIR model to data
-#' #' 
-#' #' \code{fit_seir} fits an SEIR model to incidence data
-#' #' 
-#' #' @param incidence_data data frame extracted by \code{extract_incidence}
-#' #' @param current_week numeric vector of length 1: week number of the current week
-#' #' @param n_weeks_prior numeric vector of length 1: number of weeks' previous data to use
-#' #' @return A list of two elements. The first is the incidence of infection
-#' #' and the second is the timepoints to which the incidence refers.
-#' #' @export
-#' fit_seir <- function(incidence_data, current_week, n_weeks_prior) {
-#'   
-#'   evaluate_model_and_calc_log_likelihood <- function(R_0) {
-#'     model_output <- simple_comp_seir(R_0)
-#'     model_prediction <- model_output$inf_inc[seq(1, n_weeks_prior * 7 + 1, by = 7)]
-#'     log_likelihood <- calc_log_likelihood(data, model_prediction)
-#'   }
-#'   
-#'   incidence_data <- subset_incidence_data(incidence_data, current_week,
-#'                                           n_weeks_prior)
-#'   browser()
-#'   return(NULL)
-#' }
+#' plot a likelihood profile for R_0 given data
+#' 
+#' \code{plot_likelihood_profile} plots the log likelihood of the model 
+#' given the data, for a range of R_0. The other parameters are fixed
+#' 
+#' @param likelihood_profile_output data frame returned by 
+#' \code{likelihood_profile_seir}
+#' @return ggplot object
+#' @export
+#' 
+plot_likelihood_profile <- function(likelihood_profile_output) {
+  ggplot(likelihood_profile_output, aes(x = R_0_vec, y = log_likelihood_vec)) +
+    geom_line() + xlab ("R_0") + ylab("log likelihood")
+}
+
+#' fit the SEIR model to data
+#'
+#' \code{fit_seir} fits an SEIR model to incidence data
+#'
+#' @param incidence_data data frame extracted by \code{extract_incidence}
+#' @param current_week numeric vector of length 1: week number of the current week
+#' @param starting_week numeric vector of length 1: 
+#' guess for week number when the epidemic started. Use data from starting week
+#' to current week to forecast
+#' @param R_0_min numeric vector of length 1: lower bound of R_0 values over
+#' which to search
+#' @param R_0_max numeric vector of length 1: upper bound of R_0 values over
+#' which to search
+#' @return the value of R_0 with the maximum likelihood
+#' @export
+fit_seir <- function(incidence_data, current_week, starting_week, R_0_min, R_0_max) {
+  
+  starting_week_index <- extract_week_index(starting_week, incidence_data$time_name)
+  current_week_index <- extract_week_index(current_week, incidence_data$time_name)
+  
+  n_weeks_prior <- current_week_index - starting_week_index
+  
+  incidence_data <- subset_incidence_data(incidence_data, current_week,
+                                          n_weeks_prior)
+  
+  evaluate_model_and_calc_log_likelihood <- function(R_0) {
+    model_prediction <- solve_seir_wrapper(R_0, n_weeks_prior)
+    log_likelihood <- calc_log_likelihood(incidence_data$incidence, model_prediction)
+    return(log_likelihood)
+  }
+  # max_likelihood_output <- optimise(c(1,5), evaluate_model_and_calc_negative_log_likelihood)
+  # max_likelihood_output <- optimise(c(1,5), evaluate_model_and_calc_negative_log_likelihood,
+  #                                method = "L-BFGS-B",
+  #                                lower = c(1, 0.1, 0.1, log10(1), log10(1e-4)),
+  #                                upper = c(5, 5, 5, log10(5e6), log10(1)))
+  max_likelihood_output <- optimise(function(R_0) -evaluate_model_and_calc_log_likelihood(R_0), c(R_0_min, R_0_max))
+  R_0 <- max_likelihood_output$minimum
+  return(R_0)
+}
+
+#' extract forecasted points for SEIR model
+#' 
+#' \code{extract_forecasted_points_seir} takes the R_0
+#' returned by \code{fit_seir} and extracts model predictions
+#' 
+#' @param R_0 numeric vector of length 1: basic reproduction number
+#' @param incidence_data data frame extracted by \code{extract_incidence}
+#' @param starting_week numeric vector of length 1: 
+#' guess for week number when the epidemic started. Use data from starting week
+#' to current week to forecast
+#' @param current_week numeric vector of length 1: week number of the current week
+#' @param weeks_ahead numeric vector of length 1: number of weeks to forecast ahead
+#' @return data frame with predicted points and original data
+#' @export
+#' 
+extract_forecasted_points_seir <- function(R_0, incidence_data, 
+                                           current_week,
+                                           starting_week, 
+                                           weeks_ahead) {
+
+  starting_week_index <- extract_week_index(starting_week, incidence_data$time_name)
+  current_week_index <- extract_week_index(current_week, incidence_data$time_name)
+  
+  time_used_to_forecast <- rep(FALSE, nrow(incidence_data))
+
+  time_used_to_forecast[seq(starting_week_index, current_week_index)] <- TRUE
+  incidence_data$time_used_to_forecast <- time_used_to_forecast
+  
+  n_weeks_prior <- current_week_index - starting_week_index
+  forecasted_points <- solve_seir_wrapper(R_0, weeks_ahead + n_weeks_prior)
+  forecasted_points <- forecasted_points[-seq_len(n_weeks_prior + 1)]
+  incidence_data$forecast <- rep(NA, nrow(incidence_data))
+  incidence_data$forecast[current_week_index + seq_along(forecasted_points)] <- forecasted_points
+  return(incidence_data)
+}
+
+
+#' solve SEIR model for incidence
+#' 
+#' \code{solve_seir_model} solves the SEIR model for the weekly incidence
+#' 
+#' @param R_0 numeric vector of length 1: basic reproduction number
+#' @param latent_period numeric vector of length 1: latent period
+#' @param infectious_period numeric vector of length 1: infectious period
+#' @param N numeric vector of length 1: population size
+#' @param I_0 numeric vector of length 1: initial number of infectious individuals
+#' @param n_weeks numeric vector of length 1: number of weeks for which to solve the model
+#' @return data frame with predicted points and original data
+#' @importFrom deSolve ode
+#' @export
+#' 
+solve_seir_model <- function(R_0, latent_period, infectious_period, N, I_0, n_weeks) {
+  seir_model <- function(time, x, params) {
+    with(as.list(c(x, params)), {
+      dS <- -beta * S * I / N
+      dE <- beta* S * I / N - E / latent_period
+      dI <- E / latent_period - I / infectious_period
+      dcumincidence <- E / latent_period
+      list(c(dS, dE, dI, dcumincidence))
+    })
+  }
+  
+  iv <- c(S = N - I_0, E = 0, I = I_0, incidence = 0)
+  times <- (seq_len(n_weeks + 1) - 1) * 7
+  params <- c(beta = R_0 / infectious_period, 
+              latent_period = latent_period, 
+              infectious_period = infectious_period, 
+              N = N)
+  out <- deSolve::ode(iv, times, seir_model,params)
+  incidence <- c(0, diff(out[, "incidence"]))
+  return(incidence)
+}
+
+#' solve SEIR model for incidence, specifying default parameters except for 
+#' \code{R_0} and \code{n_weeks}
+#' 
+#' \code{solve_seir_wrapper} solves the SEIR model for the weekly incidence,
+#' specifying default parameters except for \code{R_0} and \code{n_weeks}
+#' 
+#' @param R_0 numeric vector of length 1: basic reproduction number
+#' @param n_weeks numeric vector of length 1: number of weeks for which to solve the model
+#' @return data frame with predicted points and original data
+#' @export
+#' 
+solve_seir_wrapper <- function(R_0, n_weeks) {
+  latent_period <- 1.6
+  infectious_period <- 1
+  N <- 8.5e6
+  I_0 <- 100
+  reporting_rate <- 0.006
+  solve_seir_model(R_0, latent_period, infectious_period, N, I_0, n_weeks) * reporting_rate
+}
