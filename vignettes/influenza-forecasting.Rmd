@@ -35,11 +35,11 @@ To begin, please do the following (see code chunk in next paragraph):
 
 
 Enter the following commands:
-```{r setup, eval=FALSE}
+```{r setup, message=FALSE}
 devtools::load_all()
 ```
 
-```{r setup students}
+```{r setup students, eval = FALSE}
 devtools::install_github("c97sr/idd")
 library(idd)
 ```
@@ -57,18 +57,25 @@ You will be using WHO data showing weekly influenza incidence from many differen
 
 ## 1. Initial investigation of the data
 
-SECTION NEEDED ON MULTIPLE YEARS
-CRITERION NEEDED FOR EPIDEMIC START
+First, load the data set.
+Plot the data on influenza-like illness in Israel for all years.
 
-How many weekly incidence reports do you have in your dataset?
-What month(s) and years(s) does the dataset contain?
-Q: for each year, idenitfy the peak timing of the epidemic, the peak incidence, 
-and the peak intensity.  Record your results in a table.
+```{r}
+data("fluIliCountryData")
+plot_incidence_all(fluIliCountryData, "ISR")
+```
+
+Q: How many weekly incidence reports do you have in your dataset?
+
+Q: What month(s) and years(s) does the dataset contain?
+
+Q: What does each epidemic curve look like?
+
+Q: What differences do you see across the years?
 
 Now plot the weekly incidence data for Israel in 2016.
 
 ```{r plot incidence}
-data("fluIliCountryData")
 incidence_data <- extract_incidence(fluIliCountryData, 
                     country = "ISR", 
                     year = 2016)
@@ -76,7 +83,13 @@ incidence_data <- extract_incidence(fluIliCountryData,
 plot_incidence(incidence_data, log_scale = FALSE)
 ```
 
-What does the epidemic curve look like?
+We define that an epidemic is occurring if the incidence for a given week exceeds a threshold.
+For the purposes of this practical, we choose this threshold to be x individuals.
+The onset time of the epidemic is then the first week during which the incidence exceeds the threshold.
+The duration of the epidemic is the time between the last week the incidence exceeds the threshold, and the first week during which the incidence exceeds the threshold (the onset time).
+
+Q: for each year (2010-2016), identify the onset time, peak time, peak incidence and duration of the epidemic.  
+Record your results in a table.
 
 We will now use our knowledge of the real situation to explore different forecast models.
 
@@ -112,6 +125,7 @@ plot_incidence(forecast_df)
 This gives us a plot with a forecast for 1 week ahead. Save the plot.
 
 Q: What are the black, red and blue points showing?
+
 Q: Does the model look to be giving a good prediction?
 
 Change the code to get a plot for 2 weeks ahead.
@@ -160,11 +174,11 @@ plot_incidence(forecast_df)
 calc_forecast_accuracy(forecast_df)
 ```
 
-Q: Do you think this will be better? Worse?
-
 As before, change the number of weeks ahead that you forecast, and the number of previous data points to include.
 
 Q: How do forecasts with the log transform differ qualitatively from forecasts without the log transform?
+
+Q: How does the accuracy of forecasts with the log transform compare to forecasts without the log transform?
 
 Q: Where, if anywhere, do you think the model gives a good prediction?  Does accuracy change over time? If so, how?
 
@@ -243,10 +257,13 @@ print(calc_forecast_accuracy(forecast_df))
 Save a copy of your plot in your Word file.
 
 Q: What features of the incidence curve are captured by the SEIR model forecast which were not captured by the linear regression forecast?
+
 Q: Which weeks, if any, does the model give a good prediction for?
 
 Q: Change the starting week, as before, to 49 and 52.  How does the accuracy of the forecast change, in terms of the proportion of points within the threshold, and the peak timing and height?
+
 Q: how sensitive is the forecast to our guess of when the epidemic started?
+
 Q: what might be causes of error in the forecast?
 
 ## Extension work

@@ -16,7 +16,7 @@ tolerance = 0.25, a forecasted point is deemed to be accurate if the
 forecasted incidence is between 75% and 125% of the observed incidence.}
 }
 \value{
-numric vector of length 1: the proportion of forecast points 
+numeric vector of length 1: the proportion of forecast points 
 which are within a given percentage threshold of the observed incidence
 }
 \description{

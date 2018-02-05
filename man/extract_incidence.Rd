@@ -4,7 +4,7 @@
 \alias{extract_incidence}
 \title{extracts the incidence data for a given country and year}
 \usage{
-extract_incidence(flu_data, country_code = "USA", year = 2016)
+extract_incidence(flu_data, country_code = "ISR", year = 2016)
 }
 \arguments{
 \item{flu_data}{matrix with flu incidence data}
