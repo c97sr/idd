@@ -37,10 +37,14 @@ extract_incidence <- function(flu_data,
                               year = 2016) {
   flu_data <- as.data.frame(flu_data)
   year_names <- rownames(flu_data)
-  row_name_start <- paste0(year, "-27")
+  # start plotting at week 27 of the current year
+  row_name_start <- paste0(year, "-27") 
+  # stop plotting at week 26 of the next year
   row_name_end <- paste0(year + 1, "-26")
+  # find the corresponding weeks in the data
   row_index_start <- which(rownames(flu_data) == row_name_start)
   row_index_end <- which(rownames(flu_data) == row_name_end)
+  # extrac the week number and incidence for those weeks
   incidence <- flu_data[seq(row_index_start, row_index_end), 
                         colnames(flu_data) == country_code]
   time_name_vec <- year_names[seq(row_index_start, row_index_end)]
@@ -66,10 +70,13 @@ plot_incidence <- function(incidence_data, log_scale = FALSE) {
   label_x_axis_every <- 5
   label_index <- seq(1, nrow(incidence_data), by = label_x_axis_every)
   g <- ggplot(incidence_data, aes(x = t))
+  # if the data frame contains a forecast, plot the data points used to
+  # forecast in read, and the rest in black
   if("forecast" %in% colnames(incidence_data)) {
     g <- g + geom_point(aes(y = incidence, color = time_used_to_forecast)) +
       scale_color_manual(breaks = c(F, T), values = c("black", "red"))
   } else {
+    # otherwise plot all data points in black
     g <- g + geom_point(aes(y = incidence))
   }
   g <- g + scale_x_continuous("Week", breaks = incidence_data[label_index, "t"],
@@ -79,6 +86,7 @@ plot_incidence <- function(incidence_data, log_scale = FALSE) {
   if(log_scale) {
     g <- g + scale_y_log10("incidence")
   }
+  # if the data frame contains a forecast, plot it in blue
   if("forecast" %in% colnames(incidence_data)) {
     g <- g + geom_point(aes(y = forecast), color = "blue")
   }
@@ -141,15 +149,19 @@ linear_regression <- function(incidence_data,
                               n_weeks_prior = 4,
                               log_transform = TRUE) {
   
+  # extract the incidence data from n weeks prior to now
   incidence_data <- subset_incidence_data(incidence_data, current_week,
                                           n_weeks_prior)
   
+  # log transform the incidence if necessary
   if(log_transform) {
     incidence_data$incidence <- log(incidence_data$incidence)
   }
   
+  # perform linear regression
   linear_regression_output <- lm(incidence ~ t, data = incidence_data)
   
+  # returns intercept and gradient, plus other statistics
   return(linear_regression_output)
 }
 
@@ -170,21 +182,28 @@ linear_regression <- function(incidence_data,
 extract_forecasted_points <- function(lm_output, incidence_data, weeks_ahead,
                                       log_transform) {
   
+  # extract the intercept and gradient from the linear regression output
   intercept <- lm_output$coefficients[["(Intercept)"]]
   gradient <- lm_output$coefficients[["t"]]
+  
+  # find the current week (last timepoint used for forecasting)
   last_timepoint_used <- lm_output$model$t[length(lm_output$model$t)]
   if(missing(weeks_ahead)) {
     weeks_ahead <- nrow(incidence_data) - last_timepoint_used
   }
+  # find the times for which we did the forecast
   times_to_forecast <- seq_len(weeks_ahead) + last_timepoint_used
   forecasted_points <- intercept + gradient * times_to_forecast
   if(log_transform) {
     forecasted_points <- exp(forecasted_points)
   }
   
+  # make a column in the data frame recording which time points were used to forecast
   time_used_to_forecast <- rep(FALSE, nrow(incidence_data))
   time_used_to_forecast[lm_output$model$t] <- TRUE
   incidence_data$time_used_to_forecast <- time_used_to_forecast
+  
+  # paste the forecasted data points at the right times into the data frame
   incidence_data$forecast <- rep(NA, nrow(incidence_data))
   incidence_data$forecast[last_timepoint_used + seq_len(weeks_ahead)] <- forecasted_points
   return(incidence_data)
@@ -202,15 +221,25 @@ extract_forecasted_points <- function(lm_output, incidence_data, weeks_ahead,
 #' @export
 #' 
 calc_log_likelihood <- function(data, model_prediction) {
+  # check that the number of data points is the same as the number of 
+  # prediction points
   stopifnot(length(data) == length(model_prediction) &&
               identical(data, round(data)))
+  
+  # exclude na data points
   is_na_data <- which(is.na(data))
   if(length(is_na_data) > 0) {
     data <- data[-is_na_data]
     model_prediction <- model_prediction[-is_na_data]
   }
+  
+  # to avoid extremly low log likelihoods, set predicted incidence to 1 if it
+  # is below 1
   model_prediction[model_prediction < 1] <- 1
+  # actual counts = reported counts / reporting rate -- correct for this
+  # when calculating likelihood
   reporting_rate <- 0.006
+  # log likelihood assuming Poisson-distributed errors
   log_likelihood <- sum(dpois(round(data / reporting_rate), model_prediction/ reporting_rate, log = TRUE))
   return(log_likelihood)
 }
@@ -236,6 +265,7 @@ calc_log_likelihood <- function(data, model_prediction) {
 #' 
 likelihood_profile_seir <- function(incidence_data, current_week, starting_week, R_0_min, R_0_max) {
   
+  # extract incidence data for weeks used to forecast
   starting_week_index <- extract_week_index(starting_week, incidence_data$time_name)
   current_week_index <- extract_week_index(current_week, incidence_data$time_name)
   
@@ -244,12 +274,16 @@ likelihood_profile_seir <- function(incidence_data, current_week, starting_week,
   incidence_data <- subset_incidence_data(incidence_data, current_week,
                                           n_weeks_prior)
   
+  # a function which solves the SEIR model and calculates the log likelihood
+  # for a given value of R_0
   evaluate_model_and_calc_log_likelihood <- function(R_0) {
     model_prediction <- solve_seir_wrapper(R_0, n_weeks_prior)
     log_likelihood <- calc_log_likelihood(incidence_data$incidence, model_prediction)
     return(log_likelihood)
   }
   
+  # solve the SEIR model and calculate the log likelihood for 
+  # 100 evenly spaced values of R_0
   R_0_vec <- seq(R_0_min, R_0_max, length.out = 100)
   log_likelihood_vec <- vapply(R_0_vec, evaluate_model_and_calc_log_likelihood, numeric(1))
   likelihood_profile_output <- data.frame(R_0_vec = R_0_vec, 
@@ -289,6 +323,7 @@ plot_likelihood_profile <- function(likelihood_profile_output) {
 #' @export
 fit_seir <- function(incidence_data, current_week, starting_week, R_0_min, R_0_max) {
   
+  # extract incidence data for weeks used to forecast
   starting_week_index <- extract_week_index(starting_week, incidence_data$time_name)
   current_week_index <- extract_week_index(current_week, incidence_data$time_name)
   
@@ -297,6 +332,8 @@ fit_seir <- function(incidence_data, current_week, starting_week, R_0_min, R_0_m
   incidence_data <- subset_incidence_data(incidence_data, current_week,
                                           n_weeks_prior)
   
+  # a function which solves the SEIR model and calculates the log likelihood
+  # for a given value of R_0
   evaluate_model_and_calc_log_likelihood <- function(R_0) {
     model_prediction <- solve_seir_wrapper(R_0, n_weeks_prior)
     log_likelihood <- calc_log_likelihood(incidence_data$incidence, model_prediction)
@@ -307,6 +344,9 @@ fit_seir <- function(incidence_data, current_week, starting_week, R_0_min, R_0_m
   #                                method = "L-BFGS-B",
   #                                lower = c(1, 0.1, 0.1, log10(1), log10(1e-4)),
   #                                upper = c(5, 5, 5, log10(5e6), log10(1)))
+  
+  # find the value of R_0 which maximises the log likelihood.
+  # NOte that the optimise function tries to minimise, so we need the minus sign.
   max_likelihood_output <- optimise(function(R_0) -evaluate_model_and_calc_log_likelihood(R_0), c(R_0_min, R_0_max))
   R_0 <- max_likelihood_output$minimum
   return(R_0)
@@ -331,18 +371,23 @@ extract_forecasted_points_seir <- function(R_0, incidence_data,
                                            current_week,
                                            starting_week, 
                                            weeks_ahead) {
-
+  # find the times for which we did the forecast
   starting_week_index <- extract_week_index(starting_week, incidence_data$time_name)
   current_week_index <- extract_week_index(current_week, incidence_data$time_name)
   
+  # make a column in the data frame recording which time points were used to forecast
   time_used_to_forecast <- rep(FALSE, nrow(incidence_data))
 
   time_used_to_forecast[seq(starting_week_index, current_week_index)] <- TRUE
   incidence_data$time_used_to_forecast <- time_used_to_forecast
   
+  # solve the SEIR model from the starting week
   n_weeks_prior <- current_week_index - starting_week_index
   forecasted_points <- solve_seir_wrapper(R_0, weeks_ahead + n_weeks_prior)
+  # exclude points before current week from forecast
   forecasted_points <- forecasted_points[-seq_len(n_weeks_prior + 1)]
+  
+  # paste the forecasted data points at the right times into the data frame
   incidence_data$forecast <- rep(NA, nrow(incidence_data))
   incidence_data$forecast[current_week_index + seq_along(forecasted_points)] <- forecasted_points
   return(incidence_data)
@@ -364,6 +409,8 @@ extract_forecasted_points_seir <- function(R_0, incidence_data,
 #' @export
 #' 
 solve_seir_model <- function(R_0, latent_period, infectious_period, N, I_0, n_weeks) {
+  # a function which returns the rate of change of each compartment, and the
+  # rate of change of the cumulative incidence
   seir_model <- function(time, x, params) {
     with(as.list(c(x, params)), {
       dS <- -beta * S * I / N
@@ -374,14 +421,18 @@ solve_seir_model <- function(R_0, latent_period, infectious_period, N, I_0, n_we
     })
   }
   
-  iv <- c(S = N - I_0, E = 0, I = I_0, incidence = 0)
+  # initial values
+  iv <- c(S = N - I_0, E = 0, I = I_0, cumincidence = 0)
+  # times for which to solve the differential equations
   times <- (seq_len(n_weeks + 1) - 1) * 7
+  # specify model parameters
   params <- c(beta = R_0 / infectious_period, 
               latent_period = latent_period, 
               infectious_period = infectious_period, 
               N = N)
   out <- deSolve::ode(iv, times, seir_model,params)
-  incidence <- c(0, diff(out[, "incidence"]))
+  # find the incidence from the cumulative incidence
+  incidence <- c(0, diff(out[, "cumincidence"]))
   return(incidence)
 }
 
@@ -397,11 +448,13 @@ solve_seir_model <- function(R_0, latent_period, infectious_period, N, I_0, n_we
 #' @export
 #' 
 solve_seir_wrapper <- function(R_0, n_weeks) {
+  # specify default parameters
   latent_period <- 1.6
   infectious_period <- 1
   N <- 8.5e6
   I_0 <- 100
   reporting_rate <- 0.006
+  # solve ODEs
   solve_seir_model(R_0, latent_period, infectious_period, N, I_0, n_weeks) * reporting_rate
 }
 
@@ -416,14 +469,16 @@ solve_seir_wrapper <- function(R_0, n_weeks) {
 #' within which the forecasted incidence should fall.  For example, if 
 #' tolerance = 0.25, a forecasted point is deemed to be accurate if the 
 #' forecasted incidence is between 75% and 125% of the observed incidence.
-#' @return numric vector of length 1: the proportion of forecast points 
+#' @return numeric vector of length 1: the proportion of forecast points 
 #' which are within a given percentage threshold of the observed incidence
 #' @export
 #' 
 calc_forecast_accuracy <- function(forecast_df, tolerance = 0.25) {
+  # number of forecasted points within threshold
   n_accurate_points <- sum(forecast_df$forecast < forecast_df$incidence * (1 + tolerance) &
                            forecast_df$forecast > forecast_df$incidence * (1 - tolerance), 
                            na.rm = TRUE)
+  # number of forecasted points
   n_points <- sum(!is.na(forecast_df$forecast) & !is.na(forecast_df$incidence))
   proportion <- n_accurate_points / n_points
   return(proportion)
