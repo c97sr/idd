@@ -1,0 +1,297 @@
+---
+title: "Influenza Forecasting"
+author: "Steven Riley, Caroline Walters, Ada Yan"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{influenza-forecasting}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+## Objectives
+
+After successfully completing this practical, you should be able to:
+
+* Understand the objectives of forecasting.
+* Understand how accuracy in forecasting is assessed.
+* Be able to use a linear model to make a forecast (appropriate R code provided).
+* Be able to use a simple mechanistic model to make a forecast (appropriate R code provided).
+* Be able to use a historical null model as a benchmark.
+
+## Format
+
+**Timing**:  We have sufficient time to meet our objectives, however, we expect people to progress at different rates depending on their familiarity with the concepts and their experience with R.  Extension questions are included for anyone who finishes early, or for you to look over outside of this practical.  At various points in time we will come together as a group to review answers and to discuss issues that arise. 
+
+**Approach**: This practical is designed to be completed individually, however discussion with others is encouraged.  The initial questions are quite specific and are designed to help you familiarise yourself with the material. The questions become more and more open-ended as you progress through the practical.
+
+**Using R**:  We will continue using R in this practical session.  You will be provided with the R code for the practical.
+
+To access the help files for the functions used in the practical, type `help("function_name")` (e.g. `help("extract_incidence")`).
+To look at the source code for the functions, type the function name by itself (e.g. `extract_incidence`).
+
+## Background to the Task
+
+You will be using WHO data showing weekly influenza-like illness incidence from many different countries.  For a specific country you will be shown the weekly incidence for a period of 52 weeks.  Using a small subset of this data, you will be predicting the incidence for the coming weeks and comparing your predictions with the actual data. You will investigate different models.
+
+## 1. Initial investigation of the data
+
+First, load the data set.
+Plot the data on influenza-like illness in Israel for all years.
+```{r, echo = FALSE}
+library(idd)
+```
+
+```{r}
+data("fluIliCountryData")
+plot_incidence_all(fluIliCountryData, "ISR")
+```
+
+**Qu. 1.1**: How many weekly incidence reports do you have in your dataset?
+
+**Qu. 1.2**: What month(s) and years(s) does the dataset contain?
+
+**Qu. 1.3**: What differences do you see across the years?
+
+Now plot the weekly incidence data for Israel in 2016.
+
+```{r plot incidence}
+incidence_data <- extract_incidence(fluIliCountryData, 
+                    country = "ISR", 
+                    year = 2016)
+
+plot_incidence(incidence_data, log_scale = FALSE)
+```
+
+We define that an epidemic is occurring if the incidence for a given week exceeds a threshold.
+For the purposes of this practical, we choose this threshold to be 250 individuals.
+
+The onset time of the epidemic is then the first week during which the incidence exceeds the threshold.
+
+The duration of the epidemic is the time between when the epidemic first exceeds the threshold (onset time) up to the final week that the incidence exceeds the threshold.
+
+**Qu. 1.4**: for each year (2010-2016), by visual inspection of the plot, identify the onset time, peak time, peak incidence and duration of the epidemic.  
+Record your results in a table.
+
+We will now use our knowledge of the real situation to explore different models for prediction.
+
+LUNCH BREAK
+
+## 2. Linear Regression on Linear Incidence
+
+Assume that we are part way through the time period covered by the data, at week 49. We have the weekly incidence for week 49 and the four preceding weeks, so 5 data points in total. We can fit a linear model to our data points to predict future weekly incidence values.
+
+First we fit the linear model.
+Run the code
+```{r}
+linear_regression_output <- linear_regression(incidence_data,
+                              current_week = 49,
+                              n_weeks_prior = 4,
+                              log_transform = FALSE)
+```
+```{r eval = FALSE}
+linear_regression_output
+```
+
+**Qu. 2.1** What are the meanings of the values for `intercept` and `gradient`?
+
+**Extension Qu. 2.1a** Look at the source code of the function `linear_regression`.
+Find the line in the source code which performs the linear regression.
+Can you figure out what the function does? (Google may help.)
+
+Now we use the fitted model to predict the incidence for future weeks.
+Run the code
+
+```{r}
+prediction_df <- extract_predicted_points(linear_regression_output, 
+                                         incidence_data,
+                                         weeks_ahead = 8,
+                                         log_transform = FALSE)
+```
+```{r eval = FALSE}
+plot_incidence(prediction_df)
+```
+
+**Qu. 2.2** What do you think the black, red and blue points represent on this chart?
+
+**Qu. 2.3** At what times (if any) do you think the model gives a good prediction?  In qualitative terms, does prediction accuracy change over time? If so, how?
+
+### How can we assess if a prediction is accurate?
+
+From the previous question you may have developed a personal view on when the model is \'good\', however we want to have a formal way of defining 'good'.  We can consider if a prediction point lies within 25% either way of the actual value.  We can do this for all prediction points and then consider the proportion of points that are within this tolerance.
+
+Consider the previous example of making predictions at week 49, using data from the previous 4 weeks.  We want to make predictions about the coming 8 weeks.
+Extract the predicted and observed incidence by running
+
+```{r eval = FALSE}
+extract_subset_prediction(prediction_df)
+```
+
+**Qu. 2.5** Calculate the accuracy interval for each data point: lower bound is 0.75 times the observed incidence; upper bound is 1.25 times the observed incidence. Record the information in a table. Now look to see if the prediction value lies with the accuracy interval range. Calculate the proportion of points where this holds.
+*Note: the poor qualitative fit by linear regression on linear incidence suggests that the proportion of "accurate" predictions will be low.*
+*Do not be alarmed if you get a very low proportion of "accurate" predictions -- this exercise will make more sense when we compare the proportion of "accurate" predictions using this model to the proportion of "accurate" predictions in the next section.*
+
+**Qu. 2.6** What might be causes of error in the prediction?
+
+## 3. Linear Regression on Log Incidence
+
+We will now repeat what we have just done but will perform linear regression on the log transform of the data.
+
+Run the code
+```{r}
+linear_regression_output <- linear_regression(incidence_data,
+                              current_week = 49,
+                              n_weeks_prior = 4,
+                              log_transform = TRUE)
+
+prediction_df <- extract_predicted_points(linear_regression_output,
+                                         incidence_data,
+                                         weeks_ahead = 8,
+                                         log_transform = TRUE)
+```
+```{r eval = FALSE}
+plot_incidence(prediction_df)
+```
+
+**Qu. 3.1** How does the prediction with the log transform differ qualitatively from the prediction without the log transform?
+
+**Qu. 3.2** When, if at any time, do you think the model gives a good prediction?  Does accuracy change over time? If so, how?
+
+**Qu. 3.3** Compare the accuracy of this prediction with the log transform to the prediction in the previous section.
+
+Now repeat this predicting process but using data from more weeks prior.  In the code to produce `linear_regression_output`, change `n_weeks_prior` to 5, 6, 7 and 8.  Keep a copy of the results and compare them to your results using data from 4 weeks prior.
+*Note: we have stored information in for our plot in an object called `prediction_df`. When you change the value of `n_weeks_prior` and re-run the code, this will overwrite `prediction_df`.  This is not a problem, however if you would like to save the information for different plots then you must create new objects, e.g. `prediction_df2`.*
+
+To speed up the process of calculating the accuracy, you can run
+```{r eval = FALSE}
+calc_prediction_accuracy(prediction_df)
+```
+
+**Qu. 3.4** For a starting week of week 49, what is the value of `n_weeks_prior` that gives the best prediction?  For how many weeks is the prediction accurate?
+
+**Qu. 3.5** What might be causes of error in the prediction?
+
+##########################################################################
+
+## 4. SEIR Model
+
+SEIR (Susceptible-Exposed-Infected-Recovered) models are often used to model influenza.  You will now look at a prediction using an SEIR model.
+The model equations are
+
+$$\frac{dS}{dt} = -\frac{\beta SI}{N}$$
+$$\frac{dE}{dt} = \frac{\beta SI}{N} - \frac{E}{\tau_E}$$
+$$\frac{dI}{dt} = \frac{E}{\tau_E} - \frac{I}{\tau_I}$$
+$$\frac{dR}{dt} = \frac{I}{\tau_I}$$
+
+The below table contains a description of model parameters.
+
+```{r, echo = FALSE}
+params_df <- data.frame(Parameter = c("$R_0 = \\beta \\tau_I$",
+                                      "$\\tau_E$",
+                                      "$\\tau_I$",
+                                      "$N$",
+                                      "$I_0$",
+                                      "$r$"),
+                        Description = c("Basic reproduction number",
+                                        "Latent period",
+                                        "Infectious period",
+                                        "Population size",
+                                        "Initial number of infectious individuals",
+                                        "Proportion of cases which are reported"),
+                                      Value = c("varied",
+                                                "1.6 day$^{-1}$",
+                                                "1 day$^{-1}$",
+                                                "$8.5 \\times 10^6$",
+                                                "100",
+                                                "0.006"))
+knitr::kable(params_df)
+```
+
+The equation for the cumulative incidence is
+$$\frac{dC}{dt} = \frac{E}{\tau_E}$$;
+that is, the cumulative incidence is the number of individuals which have ever entered the infectious class by a given time.
+The incidence during a given week can then be obtained by subtracting the cumulative incidence of that week from the cumulative incidence in the previous week.
+
+To make a prediction using the SEIR model, we fit the model parameters to the incidence data which we are using to predict.
+In this practical, we will focus on fitting the basic reproduction number $R_0$, and assume that all other parameter values are known (see table above).
+
+We fit the model to the data by maximising the likelihood of observing the data given model parameters.
+We will assume that the observed incidence is Poisson distributed with respect to the actual incidence, with an additional correction for the proportion of cases which are reported.
+
+First, we will plot the log likelihood for a range of $R_0$, to get a sense of where the maximum might be.
+
+```{r}
+current_week <- 49
+starting_week <- 37 # our guess for the start time of the epidemic. We assume that
+# the epidemic starts with 100 infectious individuals at this time.
+R_0_min <- 1
+R_0_max <- 5
+likelihood_profile_output <- likelihood_profile_seir(incidence_data, current_week, starting_week, R_0_min, R_0_max)
+```
+```{r eval = FALSE}
+plot_likelihood_profile(likelihood_profile_output)
+```
+
+**Qu. 4.1** From looking at the likelihood profile, what is the most likely value of $R_0$?
+Is this a reasonable value of $R_0$?
+
+When we fit the SEIR model to the data, we will need to choose reasonable bounds of $R_0$ to search over.
+Plotting the likelihood profile helps us choose these bounds.
+The bounds should include the peak of the log likelihood which we have seen visually.  
+Ideally it should not include very flat regions of parameter space where the fitting algorithm will have trouble finding the maximum (in this case, very high values of $R_0$).
+
+By visually inspecting the plot we decide that we will search between $R_0 = 1$ and $R_0 = 2$.
+Run the code
+```{r}
+R_0_min <- 1
+R_0_max <- 2
+R_0 <- fit_seir(incidence_data, current_week, starting_week, R_0_min, R_0_max)
+```
+```{r eval = FALSE}
+R_0
+```
+
+**Qu. 4.2** What is the value of $R_0$ that maximises the likelihood?
+How does this compare to the value found visually?
+
+**Extension qu. 4.2a** Look at the source code of `fit_seir`.
+Identify the function which maximises the likelihood function.
+
+**Extension qu. 4.2b** Look at the source code of `solve_seir_model`.
+Match the lines in the functions to the differential equations.
+
+Now predict the future incidence using the fitted model.
+Run the code
+```{r}
+# predict using found value of R_0
+prediction_df <- extract_predicted_points_seir(R_0, incidence_data, 
+                                           current_week,
+                                           starting_week, 
+                                           weeks_ahead = 8)
+```
+```{r eval = FALSE}
+# plot prediction
+plot_incidence(prediction_df)
+calc_prediction_accuracy(prediction_df)
+```
+Save a copy of your plot in your Word file.
+
+**Qu. 4.3** What features of the incidence curve are captured by the SEIR model prediction which were not captured by the linear regression prediction?
+
+**Qu. 4.4** Which weeks, if any, does the model give a good prediction for?
+
+**Qu. 4.5** Compare the prediction accuracy of the SEIR and linear regression models.
+
+**Qu. 4.6** Because the SEIR model can reproduce the shape of the epidemic curve, we can assess how well it captures the peak timing, peak incidence and duration of the epidemic.
+Perform this assessment.
+
+**Qu. 4.7** Change the starting week to take values between 45 and 5 (in the next year).  How does the accuracy of the prediction change, in terms of the proportion of points within the threshold, and the peak timing and height?
+
+**Extension qu. 4.7a** How sensitive is the prediction to our guess of when the epidemic started?
+
+**Qu. 4.8** What might be causes of error in the prediction?
+
+## Extension work
+
+If you have completed all of the tasks, please ask one of the course demonstrators for extension work.
