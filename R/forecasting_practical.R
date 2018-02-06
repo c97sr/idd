@@ -81,7 +81,7 @@ plot_incidence_all <- function(flu_data, country_code = "ISR") {
   all_incidence$season <- factor(all_incidence$season, levels = years)
 
   g <- ggplot(all_incidence, aes(x = t)) +
-    geom_line(aes(y = incidence, color = season)) +
+    geom_line(aes(y = incidence, color = season), na.rm = TRUE) +
     scale_x_continuous("Weeks since week 26 of calendar year", 
                        breaks = seq(0, max(all_incidence$t), by = 5))
   return(g)
