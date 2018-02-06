@@ -3,12 +3,10 @@
 \docType{data}
 \name{fluIliCountryData}
 \alias{fluIliCountryData}
-\title{Simulation model example data frame}
+\title{Forecast model example data frame}
 \description{
-This object contains synthetic data on the location of farms in Kent, UK.
-These are not real locations but they have a similar density distribution.
-These data are intended to be used in a teaching example about
-simulation models of infectious disease.
+These are influenza-like-illness data gathered from many countries across the 
+world and curated by the WHO as FluID.
 }
 \references{
 These incidence data are from publically available WHO syndromic data
