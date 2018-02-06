@@ -28,33 +28,12 @@ After successfully completing this practical, you should be able to:
 
 **Using R**:  We will continue using R in this practical session.  You will be provided with the R code for the practical.
 
-To begin, please do the following:
-
-1. Check that your R installation has the package `devtools` installed by typing `library(devtools)` and making sure that there are no error messages.
-2. Install the latest version of the package `idd` with the command `install_github("c97sr/idd", build_vignettes = TRUE)`
-3. Load the package with `library(idd)`
-4. Reproduce this document with the command `vignette("influenza-forecasting")` 
-5. Set up an answer document in Word (or similar text editor) and make sure you can copy and paste charts from R to Word.
-
-
-```{r setup, eval=FALSE}
-devtools::load_all()
-```
-
-```{r setup students, include = FALSE}
-devtools::install_github("c97sr/idd", build_vignettes = FALSE)
-library(idd)
-```
-
-You should now have all the files you need to complete the practical.
-
 To access the help files for the functions used in the practical, type `help("function_name")` (e.g. `help("extract_incidence")`).
 To look at the source code for the functions, type the function name by itself (e.g. `extract_incidence`).
 
 ## Background to the Task
 
 You will be using WHO data showing weekly influenza-like illness incidence from many different countries.  For a specific country you will be shown the weekly incidence for a period of 52 weeks.  Using a small subset of this data, you will be predicting the incidence for the coming weeks and comparing your predictions with the actual data. You will investigate different models.
-
 
 ## 1. Initial investigation of the data
 
