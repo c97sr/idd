@@ -39,6 +39,9 @@ You will be using WHO data showing weekly influenza-like illness incidence from 
 
 First, load the data set.
 Plot the data on influenza-like illness in Israel for all years.
+```{r, echo = FALSE}
+library(idd)
+```
 
 ```{r}
 data("fluIliCountryData")
