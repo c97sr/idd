@@ -20,6 +20,10 @@ After successfully completing this practical, you should be able to:
 * Be able to use a simple mechanistic model to make a forecast (appropriate R code provided).
 * Be able to use a historical null model as a benchmark.
 
+## Slides
+
+The slides that accompany this session are [here](https://goo.gl/chchNs) on google drive.
+
 ## Format
 
 **Timing**:  We have sufficient time to meet our objectives, however, we expect people to progress at different rates depending on their familiarity with the concepts and their experience with R.  Extension questions are included for anyone who finishes early, or for you to look over outside of this practical.  At various points in time we will come together as a group to review answers and to discuss issues that arise. 
@@ -294,4 +298,7 @@ Perform this assessment.
 
 ## Extension work
 
-If you have completed all of the tasks, please ask one of the course demonstrators for extension work.
+If you have completed all of the tasks, please ask one of the course demonstrators for extension work, inspired by the questions below.
+
+** Qu. E1 ** Do the different model types perform similarly well in different years for this country and for other countries in the dataset? I well preserved is the ordering that liner models on a log scale are better than linear models on a linear scale?
+
