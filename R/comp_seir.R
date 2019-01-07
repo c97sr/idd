@@ -1,5 +1,6 @@
 # Copyright Steven Riley (sr@stevenriley.net)
-#
+# 
+## TODO make these comments use double ##
 # This file is part of the library idd.
 #
 # idd is free software: you can redistribute it and/or modify

@@ -298,4 +298,7 @@ Perform this assessment.
 
 ## Extension work
 
-If you have completed all of the tasks, please ask one of the course demonstrators for extension work.
+If you have completed all of the tasks, please ask one of the course demonstrators for extension work, inspired by the questions below.
+
+** Qu. E1 ** Do the different model types perform similarly well in different years for this country and for other countries in the dataset? I well preserved is the ordering that liner models on a log scale are better than linear models on a linear scale?
+
