@@ -4,9 +4,10 @@
 \alias{zika_invasion}
 \title{Illustration of possible zika invasion dynamics}
 \usage{
-zika_invasion(its = 10, file = "screen", N = 1e+06, seed = 19283719,
-  highlights = c(1, 2, 3), highcolors = c("red", "magenta", "cyan"),
-  maxts = 360 * 2, R0axes = 0:4, incaxes = seq(0, 3.5, 0.5))
+zika_invasion(its = 10, file = "screen", N = 1e+06,
+  seed = 19283719, highlights = c(1, 2, 3), highcolors = c("red",
+  "magenta", "cyan"), maxts = 360 * 2, R0axes = 0:4, incaxes = seq(0,
+  3.5, 0.5))
 }
 \arguments{
 \item{its}{number of iterations for the second population}

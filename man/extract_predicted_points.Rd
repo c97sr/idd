@@ -4,7 +4,8 @@
 \alias{extract_predicted_points}
 \title{extract predicted points from linear regression object}
 \usage{
-extract_predicted_points(lm_output, incidence_data, weeks_ahead, log_transform)
+extract_predicted_points(lm_output, incidence_data, weeks_ahead,
+  log_transform)
 }
 \arguments{
 \item{lm_output}{linear regression object returned by \code{linear_regression}}

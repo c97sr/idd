@@ -31,6 +31,8 @@
 #' @param textscale scale factor for axis labels
 #'
 #' @example pdf_fig_proof()
+#' 
+#' @export 
 pdf_fig_proof <- function(
   findex=1,
   file=paste("./pdf_sub_",findex,".pdf",sep=""),

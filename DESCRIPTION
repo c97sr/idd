@@ -10,7 +10,7 @@ Authors@R: as.person(c(
   ))
 Description: More about what it does (maybe more than one line)
 License: GPL-3
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 Imports:
     ggplot2,
     deSolve

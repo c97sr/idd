@@ -4,8 +4,8 @@
 \alias{pdf_fig_proof}
 \title{Opens a pdf device with sensible options}
 \usage{
-pdf_fig_proof(findex = 1, file = paste("./pdf_sub_", findex, ".pdf", sep =
-  ""), pw = 7, ph = 7, textscale = 0.6, xpd = NA)
+pdf_fig_proof(findex = 1, file = paste("./pdf_sub_", findex, ".pdf",
+  sep = ""), pw = 7, ph = 7, textscale = 0.6, xpd = NA)
 }
 \arguments{
 \item{findex}{is a name index to make it easier to generate many plots

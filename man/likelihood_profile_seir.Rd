@@ -4,8 +4,8 @@
 \alias{likelihood_profile_seir}
 \title{construct a likelihood profile for R_0 given data}
 \usage{
-likelihood_profile_seir(incidence_data, current_week, starting_week, R_0_min,
-  R_0_max)
+likelihood_profile_seir(incidence_data, current_week, starting_week,
+  R_0_min, R_0_max)
 }
 \arguments{
 \item{incidence_data}{incidence data extracted by \code{extract_incidence}}

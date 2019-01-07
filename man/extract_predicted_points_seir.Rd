@@ -4,8 +4,8 @@
 \alias{extract_predicted_points_seir}
 \title{extract predicted points for SEIR model}
 \usage{
-extract_predicted_points_seir(R_0, incidence_data, current_week, starting_week,
-  weeks_ahead)
+extract_predicted_points_seir(R_0, incidence_data, current_week,
+  starting_week, weeks_ahead)
 }
 \arguments{
 \item{R_0}{numeric vector of length 1: basic reproduction number}
