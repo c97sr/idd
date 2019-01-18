@@ -3,11 +3,9 @@ Type: Package
 Title: A collection of functions useful for the study of infectious disease dynamics
 Version: 0.90
 Date: 2015-07-24
-Authors@R: as.person(c(
-    "Steven Riley <sr@stevenriley.net> [aut, cre]", 
-    "Caroline Walters <c.e.walters6@gmail.com> [aut]",
-    "Ada Yan <ada.w.yan@gmail.com> [aut]"
-  ))
+Authors@R: as.person(c("Steven Riley <sr@stevenriley.net> [aut, cre]", 
+"Caroline Walters <c.e.walters6@gmail.com> [aut]",
+"Ada Yan <ada.w.yan@gmail.com> [aut]"))
 Description: More about what it does (maybe more than one line)
 License: GPL-3
 RoxygenNote: 6.1.1
