@@ -1,5 +1,5 @@
 #' @export
-cov.clusters <- function(inchains,sim) {
+cov_clusters <- function(inchains,sim) {
 
     ## Not sure this one is needed
     ## Going to try to add this functionality to the function above first

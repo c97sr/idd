@@ -1,5 +1,5 @@
 #' export
-cov.chains  <- function(
+cov_chains  <- function(
                         simres,
                         max_ons = 49,
                         max_trv = 60) {

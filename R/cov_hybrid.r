@@ -1,5 +1,5 @@
 #' @export
-ncov.hybrid <- function(
+ncov_hybrid <- function(
                         R0 = 2.1,
                         vecN=c(5000000,5000000),
                         vecI0=rep(15,length(vecN)),
