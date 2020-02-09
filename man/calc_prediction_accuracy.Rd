@@ -13,7 +13,7 @@ calc_prediction_accuracy(prediction_df, tolerance = 0.25)
 \item{tolerance}{numeric vector of length 1: parameter specifying range
 within which the predicted incidence should fall.  For example, if 
 tolerance = 0.25, a predicted point is deemed to be accurate if the 
-predicted incidence is between 75% and 125% of the observed incidence.}
+predicted incidence is between 75\% and 125\% of the observed incidence.}
 }
 \value{
 numeric vector of length 1: the proportion of prediction points 
