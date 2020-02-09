@@ -1,3 +1,4 @@
+#' export
 cov.chains  <- function(
                         simres,
                         max_ons = 49,

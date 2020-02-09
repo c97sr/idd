@@ -1,3 +1,4 @@
+#' @export
 ncov.hybrid <- function(
                         R0 = 2.1,
                         vecN=c(5000000,5000000),

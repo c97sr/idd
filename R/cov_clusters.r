@@ -1,3 +1,4 @@
+#' @export
 cov.clusters <- function(inchains,sim) {
 
     ## Not sure this one is needed
