@@ -1,6 +1,6 @@
 #' Function to simulate an ncov-like brtanching process
 #' @export
-ncov_branch <- function(
+cov_branch <- function(
                      nreal=2,
                      ninf=100,
                      tinfmax=999,
