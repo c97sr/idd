@@ -131,8 +131,8 @@ cov_hybrid <- function(
                 noInf <- rbinom(nAges,S,pVecFoi)
                 noExE <- rbinom(nAges,E,vecProbExE)
                 noEntI1S <- rbinom(nAges, noExE, vecPS)
-                noEntI1M <- rbinom(nAges, noExE - noEntI1M, vecPMcond)
-                noEntI1A <- rbinom(nAges, noExE - noEntI1M - noEnt1M, vecPAcond)
+                noEntI1M <- rbinom(nAges, noExE - noEntI1S, vecPMcond)
+                noEntI1A <- rbinom(nAges, noExE - noEntI1S - noEnt1M, vecPAcond)
                 noEntI1F <- noExE - noEntI1S - noEntI1M - noEntI1A                        
                 noExI_1M <- rbinom(nAges,I_1M,vecProbExI_1M)
                 noExI_2M <- rbinom(nAges,I_2M,vecProbExI_2M)
