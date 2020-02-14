@@ -17,7 +17,7 @@ cov_branch <- function(
                      ) {
 
     ## Check for inconsistencies in the arguments
-    if ((is.null(off) && R0 < 0) {
+    if ((is.null(off) && R0 < 0)) {
         stop("conflict in vector off and R0 values")
     } 
 
