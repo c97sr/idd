@@ -5,14 +5,28 @@ cov_branch <- function(
                      ninf=100,
                      tinfmax=999,
                      seed=10,
+                     popN=-1,
                      gtd=dpois(0:20,8.1),
                      off=dpois(0:10,2.6),
                      ipd=dpois(0:10,5.8),
                      pass_per_day=3301,
+                     R0 = -1,
+                     k = 1,
                      popsize=19000000,
                      casetypes=c(1,1,1)
                      ) {
 
+    ## Check for inconsistencies in the arguments
+    if ((is.null(off) && R0 < 0) {
+        stop("conflict in vector off and R0 values")
+    } 
+
+    ## Set broad options
+    if (R0 > 0) {
+        disoff = TRUE
+        ## Here set k vlaue
+    }
+    
     ## Define ranges for the waiting time ditrsibutions
     dom_gtd  <- 0:(length(gtd)-1)
     dom_off  <- 0:(length(off)-1)
@@ -46,6 +60,9 @@ cov_branch <- function(
         cur_sus  <- seed+1
         still_run  <- TRUE
         while (still_run) {
+
+            ## TODO code in finite populations size here
+            
             inf_to_assign <- sample(dom_off,1,prob=off)
             while (still_run && (inf_to_assign > 1)) {
                 rtn_inf[cur_sus,i] <- rtn_inf[cur_inf,i] + sample(dom_gtd,1,prob=gtd)
