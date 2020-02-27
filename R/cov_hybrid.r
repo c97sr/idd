@@ -1,46 +1,84 @@
 #' @export
 cov_hybrid <- function(
-                       R0 = 2.1,
-                       vecN=c(5000,5000),
-                       vecI0=rep(15,length(vecN)),
+                       R0 = 2.6,
+                       vecN=60000000*c(0.25,0.25,0.25,0.25),
+                       vecI0=rep(1,length(vecN)),
                        vecInfNess=rep(1,length(vecN)),
+                       vecSusTy=rep(1,length(vecN)),
                        vecPS=rep(0.1,length(vecN)),
                        vecPM=rep(0.1,length(vecN)),
                        vecPA=rep(0.1,length(vecN)),
                        matCt=matrix(1/length(vecN),
                                      nrow=length(vecN),
                                      ncol=length(vecN)),
-                       vecTcalc=seq(0,360,0.1),
+                       matCtClosure=matrix(1/length(vecN),
+                                     nrow=length(vecN),
+                                     ncol=length(vecN)),
+                       scLim=c(99999,99999),
+                       vecTcalc=seq(0,720,0.1),
                        vecRtrel=rep(1,length(vecTcalc)),
                        D_E=2,
                        D_I1=5,
                        D_I2=3,
                        D_HR=20,
                        D_HD=23,
-                       deterministic=FALSE,
-                       plot=TRUE,
-                       nReals=2
-                       ) {
+                       deterministic=TRUE,
+                       plot=FALSE,
+                       nReals=2,
+                       dummy=NULL
+                       ) { 
     
     ## Define housekeeping variables
     nAges <- length(vecN)
     nTimes <- length(vecTcalc)
+    totalN <- sum(vecN)
     dt <- vecTcalc[2] - vecTcalc[1]
     vecOne <- rep(1,nAges)
+    vecPF <- vecOne - vecPS - vecPM - vecPA
     vecPMcond <- vecPM / (vecOne - vecPS)
     vecPAcond <- vecPA / (vecOne - vecPS - vecPM)
-
-    ## Test for consistency in the data
-    ## TODO add in the tests here
-    ## Test that the probabilities add up
+    sevClassChars <- c("S","M","F","A")
+    nSevClasses <- length(sevClassChars)
+    matPsev <- data.frame(S=vecPS,M=vecPM,F=vecPF,A=vecPA)
+    
+    ## Test for consistency in the input parameters
+    if (min(vecPF) < 0) {stop("Age specific severity parameters are not consistent")}
+    if (deterministic) {nReals <- 1}
 
     ## Declare items to be returned
     rtn_inf <- array(dim=c(nTimes,nAges,nReals))
     rtn_pop <- array(dim=c(nTimes,nAges,nReals))
     
-    ## Reparameterise from R0 to beta
-    beta <- R0 / D_I1
-    
+    ## Create next generation matrix, assuming each severity level is an
+    ## infectious type. Needs to be nested to 4 levels for infector and infectee
+    ngm = matrix(ncol=nAges*nSevClasses,nrow=nAges*nSevClasses)
+    for (i in 1:nSevClasses) {
+        tor <- sevClassChars[i]
+        for (j in 1:nAges) {
+            for (k in 1:nSevClasses) {
+                tee <- sevClassChars[k] 
+                for (l in 1:nAges) {
+                    ngm_col <- (i-1)*nAges + j
+                    ngm_row <- (k-1)*nAges + l
+
+                    ## Not entirely sure why this doesn't have a term for the
+                    ## relative size of each population, but will worry about that
+                    ## later! vecN[l] / totalN. Seems to pass the tests.
+                    ngm[ngm_row,ngm_col] <-
+                        matCt[j,l] * (D_I1+D_I2) * matPsev[l,k] *
+                        vecInfNess[j] * vecSusTy[l]
+
+                    ## Close all the loops
+                 }
+            }
+        }
+    }
+
+    ## Set the value of beta using the NGM matrix
+    R0_ngm <- Re((eigen(ngm))$values[1])
+    beta <- R0 / R0_ngm
+    beta_check <- R0 / (D_I1 + D_I2)
+
     ## Initiate the realisation loop
     for (i in 1:nReals) {
 
@@ -93,18 +131,25 @@ cov_hybrid <- function(
 
             ## Set current beta
             beta_cur <- vecRtrel[j] * beta
+
+            ## Set mixing matrix
+            t_cur <- vecTcalc[j]
+            if ((t_cur < scLim[1]) || (t_cur >= scLim[2])) {
+                matCtTmp <- matCt
+            } else {
+                matCtTmp <- matCtClosure
+            }
             
             ## Calculate variable hazards
-            vecFoi <-  beta_cur * vecInfNess * (
-                (I_1M %*% matCt) / vecN +
-                (I_2M %*% matCt) / vecN +
-                (I_1F %*% matCt) / vecN +
-                (I_2F %*% matCt) / vecN +
-                (I_1S %*% matCt) / vecN +
-                (I_2S %*% matCt) / vecN +
-                (I_1A %*% matCt) / vecN +
-                (I_2A %*% matCt) / vecN
-                
+            vecFoi <-  beta_cur * vecSusTy * (
+                ((I_1M * vecInfNess) %*% matCtTmp) / vecN +
+                ((I_2M * vecInfNess) %*% matCtTmp) / vecN +
+                ((I_1F * vecInfNess) %*% matCtTmp) / vecN +
+                ((I_2F * vecInfNess) %*% matCtTmp) / vecN +
+                ((I_1S * vecInfNess) %*% matCtTmp) / vecN +
+                ((I_2S * vecInfNess) %*% matCtTmp) / vecN +
+                ((I_1A * vecInfNess) %*% matCtTmp) / vecN +
+                ((I_2A * vecInfNess) %*% matCtTmp) / vecN
             )
             
             ## Calculate variable probabilites
@@ -132,7 +177,7 @@ cov_hybrid <- function(
                 noExE <- rbinom(nAges,E,vecProbExE)
                 noEntI1S <- rbinom(nAges, noExE, vecPS)
                 noEntI1M <- rbinom(nAges, noExE - noEntI1S, vecPMcond)
-                noEntI1A <- rbinom(nAges, noExE - noEntI1S - noEnt1M, vecPAcond)
+                noEntI1A <- rbinom(nAges, noExE - noEntI1S - noEntI1M, vecPAcond)
                 noEntI1F <- noExE - noEntI1S - noEntI1M - noEntI1A                        
                 noExI_1M <- rbinom(nAges,I_1M,vecProbExI_1M)
                 noExI_2M <- rbinom(nAges,I_2M,vecProbExI_2M)
@@ -180,13 +225,18 @@ cov_hybrid <- function(
 
     ## Plot a quick diagnostic, mainly for dbugging the flow equations
     if (plot) {
-        plot(vecTcalc,rtn_pop[,1,1]+1,type="l",log="y",ylim=c(1,max(rtn_pop[,1,1])))
-        points(vecTcalc,rtn_inf[,1,1]+1)
+        plot(
+            vecTcalc,rtn_pop[,1,1]+1,
+            type="l",log="y",col="red",
+            ylim=c(1,max(rtn_pop[,1,1]))
+        )
+        points(vecTcalc/30,rowSums(rtn_inf[,,1])+1)
     }
     
     ## Return the outputs, expand as necessary
     list(inf=rtn_inf,
          cinf=rtn_inf_cum,
-         t=vecTcalc)
+         t=vecTcalc,
+         pop=vecN)
 
 }
