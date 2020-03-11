@@ -1,8 +1,9 @@
 #' @export
-cov_hybrid <- function(
-                       R0 = 2.6,
-                       vecN=60000000*c(0.25,0.25,0.25,0.25),
-                       vecI0=rep(1,length(vecN)),
+cov_hybrid <- function(R0 = 2.0,
+                       Rp = 1.5,
+                       Rover = 0.9,
+                       vecN=66000000*c(0.25,0.25,0.25,0.25),
+                       vecI0=rep(5000/length(vecN),length(vecN)),
                        vecInfNess=rep(1,length(vecN)),
                        vecSusTy=rep(1,length(vecN)),
                        vecPS=rep(0.1,length(vecN)),
@@ -18,14 +19,18 @@ cov_hybrid <- function(
                        vecTcalc=seq(0,720,0.1),
                        vecRtrel=rep(1,length(vecTcalc)),
                        D_E=2,
-                       D_I1=5,
+                       D_I1=3,
                        D_I2=3,
                        D_HR=20,
                        D_HD=23,
+                       D_ICU=rep(7,length(vecN)),
                        deterministic=TRUE,
-                       plot=FALSE,
                        nReals=2,
-                       dummy=NULL
+                       trig_pres=99999999,
+                       icu_cap=0.9999,
+                       plot=FALSE,
+                       trickle=0,
+                       sevBchange=FALSE
                        ) { 
     
     ## Define housekeeping variables
@@ -40,7 +45,10 @@ cov_hybrid <- function(
     sevClassChars <- c("S","M","F","A")
     nSevClasses <- length(sevClassChars)
     matPsev <- data.frame(S=vecPS,M=vecPM,F=vecPF,A=vecPA)
-    
+
+    ## Define triggers
+    maxICU <- ceiling(icu_cap * totalN)
+
     ## Test for consistency in the input parameters
     if (min(vecPF) < 0) {stop("Age specific severity parameters are not consistent")}
     if (deterministic) {nReals <- 1}
@@ -94,6 +102,7 @@ cov_hybrid <- function(
         I_1S <- rep(0,nAges)
         I_2S <- rep(0,nAges)
         R <- rep(0,nAges)
+        ICU <- rep(0,nAges)
 
         ## Initiate constant hazards
         vecHazExE = rep(1/D_E,nAges)
@@ -105,17 +114,19 @@ cov_hybrid <- function(
         vecHazExI_2A = rep(1/D_I2,nAges)
         vecHazExI_1S = rep(1/D_I1,nAges)
         vecHazExI_2S = rep(1/D_I2,nAges)
+        vecHazExICU = 1/D_ICU
 
         ## Initiate constant probs
-        vecProbExE = 1 - exp(-dt * vecHazExE)
-        vecProbExI_1M = 1 - exp(-dt * vecHazExI_1M)
-        vecProbExI_2M = 1 - exp(-dt * vecHazExI_2M)
-        vecProbExI_1F = 1 - exp(-dt * vecHazExI_1F)
-        vecProbExI_2F = 1 - exp(-dt * vecHazExI_2F)
-        vecProbExI_1S = 1 - exp(-dt * vecHazExI_1S)
-        vecProbExI_2S = 1 - exp(-dt * vecHazExI_2S)
-        vecProbExI_1A = 1 - exp(-dt * vecHazExI_1A)
-        vecProbExI_2A = 1 - exp(-dt * vecHazExI_2A)
+        vecProbExE <- 1 - exp(-dt * vecHazExE)
+        vecProbExI_1M <- 1 - exp(-dt * vecHazExI_1M)
+        vecProbExI_2M <- 1 - exp(-dt * vecHazExI_2M)
+        vecProbExI_1F <- 1 - exp(-dt * vecHazExI_1F)
+        vecProbExI_2F <- 1 - exp(-dt * vecHazExI_2F)
+        vecProbExI_1S <- 1 - exp(-dt * vecHazExI_1S)
+        vecProbExI_2S <- 1 - exp(-dt * vecHazExI_2S)
+        vecProbExI_1A <- 1 - exp(-dt * vecHazExI_1A)
+        vecProbExI_2A <- 1 - exp(-dt * vecHazExI_2A)
+        vecProbExICU <- 1 - exp(-dt * vecHazExICU)
         
         ## Initiate the return data structures
         rtn_inf[1,,i] <- vecI0
@@ -123,14 +134,30 @@ cov_hybrid <- function(
             S,E,
             I_1M,I_2M,I_1F,I_2F,
             I_1S,I_2S,I_1A,I_2A,
-            R)
+            ICU,R)
+
+        ## Initiate some non-state variables that are needed
+        cumICU <- 0
+        sevInICU <- rep(0,nAges)
+        sevOutICU <- rep(0,nAges)
         
         ## Initiate the time loop
         j <- 2
         while (j <= nTimes) {
 
+            ## Adjust for triggers
+            if (cumICU > trig_pres) {
+                if ((sum(ICU) > maxICU) && sevBchange) {
+                    beta_tmp <- beta * Rover / R0
+                } else {
+                    beta_tmp <- beta * Rp / R0 
+                }
+            } else {
+                beta_tmp <- beta
+            }
+
             ## Set current beta
-            beta_cur <- vecRtrel[j] * beta
+            beta_cur <- vecRtrel[j] * beta_tmp
 
             ## Set mixing matrix
             t_cur <- vecTcalc[j]
@@ -150,7 +177,7 @@ cov_hybrid <- function(
                 ((I_2S * vecInfNess) %*% matCtTmp) / vecN +
                 ((I_1A * vecInfNess) %*% matCtTmp) / vecN +
                 ((I_2A * vecInfNess) %*% matCtTmp) / vecN
-            )
+            ) + trickle / (totalN * 7 * dt * nAges)
             
             ## Calculate variable probabilites
             pVecFoi <- 1 - exp(-dt*vecFoi)
@@ -172,6 +199,7 @@ cov_hybrid <- function(
                 noExI_2S <- I_2S * vecProbExI_2S
                 noExI_1A <- I_1A * vecProbExI_1A
                 noExI_2A <- I_2A * vecProbExI_2A
+                noExICU <- ICU * vecProbExICU
             } else {
                 noInf <- rbinom(nAges,S,pVecFoi)
                 noExE <- rbinom(nAges,E,vecProbExE)
@@ -187,8 +215,22 @@ cov_hybrid <- function(
                 noExI_2S <- rbinom(nAges,I_2S,vecProbExI_2S)
                 noExI_1A <- rbinom(nAges,I_1A,vecProbExI_1A)
                 noExI_2A <- rbinom(nAges,I_2A,vecProbExI_2A)
+                noExICU <- rbinom(nAges,ICU,vecProbExICU)
             }
 
+            ## Count severe people making it into ICU and those not making
+            ## it into ICU
+            capICU <- maxICU - sum(ICU)
+            if (capICU > sum(ICU)) {
+                    sevInICU <- sevInICU + noExI_2S
+                } else if (capICU <= 0) {
+                    sevOutICU <- sevOutICU + noExI_2S
+                } else {
+                    ## TODO age prioritization here
+                    sevOutICU <- sevOutICU + noExI_2S
+                }
+
+            
             ## Update the state variables
             ## Problems are probably here
             S <- S - noInf
@@ -201,14 +243,16 @@ cov_hybrid <- function(
             I_2S <- I_2S + noExI_1S - noExI_2S
             I_1A <- I_1A + noEntI1A - noExI_1A
             I_2A <- I_2A + noExI_1A - noExI_2A
-            R <- R + noExI_2M + noExI_2F + noExI_2S + noExI_2A
+            ICU <- ICU + noExI_2S - noExICU
+            R <- R + noExI_2M + noExI_2F + noExICU + noExI_2A
 
-            ## Record the other outpur variables
+            ## Record the other output variables
             rtn_inf[j,,i] <- noInf
             rtn_pop[j,,i] <- sum(S,E,
                                  I_1M,I_2M,I_1F,I_2F,
                                  I_1S,I_2S,I_1A,I_2A,
-                                 R)
+                                 ICU,R)
+            cumICU <- cumICU + sum(noExI_2S)
             
             ## Close off the loop
             j <- j+1
@@ -236,6 +280,8 @@ cov_hybrid <- function(
     ## Return the outputs, expand as necessary
     list(inf=rtn_inf,
          cinf=rtn_inf_cum,
+         sevIn=sum(sevInICU),
+         sevOut=sum(sevOutICU),
          t=vecTcalc,
          pop=vecN)
 
