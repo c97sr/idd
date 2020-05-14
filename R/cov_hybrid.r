@@ -34,38 +34,38 @@ cov_hybrid <- function(R0 = 2.0,
                        ) { 
     
     ## Define housekeeping variables
-    nAges <- length(vecN)
-    nTimes <- length(vecTcalc)
-    totalN <- sum(vecN)
-    dt <- vecTcalc[2] - vecTcalc[1]
-    vecOne <- rep(1,nAges)
-    vecPF <- vecOne - vecPS - vecPM - vecPA
+    nAges <- length(vecN)                    # age groups
+    nTimes <- length(vecTcalc)               # time points
+    totalN <- sum(vecN)                      # total population size
+    dt <- vecTcalc[2] - vecTcalc[1]          # time step size
+    vecOne <- rep(1,nAges)                   # vector of 1's for each age group
+    vecPF <- vecOne - vecPS - vecPM - vecPA  # propbility vectors for each age group
     vecPMcond <- vecPM / (vecOne - vecPS)
     vecPAcond <- vecPA / (vecOne - vecPS - vecPM)
     sevClassChars <- c("S","M","F","A")
     nSevClasses <- length(sevClassChars)
-    matPsev <- data.frame(S=vecPS,M=vecPM,F=vecPF,A=vecPA)
+    matPsev <- data.frame(S=vecPS,M=vecPM,F=vecPF,A=vecPA) # severity matrix for each age group
 
     ## Define triggers
-    maxICU <- ceiling(icu_cap * totalN)
+    maxICU <- ceiling(icu_cap * totalN) # maximum ICU capacity?
 
     ## Test for consistency in the input parameters
     if (min(vecPF) < 0) {stop("Age specific severity parameters are not consistent")}
     if (deterministic) {nReals <- 1}
 
     ## Declare items to be returned
-    rtn_inf <- array(dim=c(nTimes,nAges,nReals))
+    rtn_inf <- array(dim=c(nTimes,nAges,nReals)) # initialised infection history?
     rtn_pop <- array(dim=c(nTimes,nAges,nReals))
     
     ## Create next generation matrix, assuming each severity level is an
     ## infectious type. Needs to be nested to 4 levels for infector and infectee
     ngm = matrix(ncol=nAges*nSevClasses,nrow=nAges*nSevClasses)
-    for (i in 1:nSevClasses) {
+    for (i in 1:nSevClasses) { # loop over severity classes of infecTOR
         tor <- sevClassChars[i]
-        for (j in 1:nAges) {
-            for (k in 1:nSevClasses) {
+        for (j in 1:nAges) { # loop over age groups of infecTOR
+            for (k in 1:nSevClasses) { # loop over severity classes of infecTEE
                 tee <- sevClassChars[k] 
-                for (l in 1:nAges) {
+                for (l in 1:nAges) { # loop over age groups of infecTEE
                     ngm_col <- (i-1)*nAges + j
                     ngm_row <- (k-1)*nAges + l
 
@@ -141,6 +141,7 @@ cov_hybrid <- function(R0 = 2.0,
         sevInICU <- rep(0,nAges)
         sevOutICU <- rep(0,nAges)
         
+        
         ## Initiate the time loop
         j <- 2
         while (j <= nTimes) {
@@ -158,7 +159,7 @@ cov_hybrid <- function(R0 = 2.0,
 
             ## Set current beta
             beta_cur <- vecRtrel[j] * beta_tmp
-
+            
             ## Set mixing matrix
             t_cur <- vecTcalc[j]
             if ((t_cur < scLim[1]) || (t_cur >= scLim[2])) {
@@ -264,7 +265,7 @@ cov_hybrid <- function(R0 = 2.0,
     rtn_inf_cum <- array(dim=c(nTimes,nAges,nReals))
     rtn_inf_cum[1,,] <- rtn_inf[1,,]
     for (i in 2:nTimes) {
-        rtn_inf_cum[i,,] <- rtn_inf_cum[i-1,,] + rtn_inf[i,,]
+        rtn_inf_cum[i,,] <- rtn_inf_cum[i-1,,] + rtn_inf[i,,] # cumulative infections by age group
     }
 
     ## Plot a quick diagnostic, mainly for dbugging the flow equations
@@ -278,11 +279,11 @@ cov_hybrid <- function(R0 = 2.0,
     }
     
     ## Return the outputs, expand as necessary
-    list(inf=rtn_inf,
-         cinf=rtn_inf_cum,
-         sevIn=sum(sevInICU),
-         sevOut=sum(sevOutICU),
-         t=vecTcalc,
-         pop=vecN)
+    list(inf=rtn_inf,             # number infected by age group at each time point
+         cinf=rtn_inf_cum,        # cumulative number infected by age group at each time point
+         sevIn=sum(sevInICU),     # number of severe people making it into ICU
+         sevOut=sum(sevOutICU),   # number of severe people NOT making it into ICU
+         t=vecTcalc,              # vector of time points
+         pop=vecN)                # population size within each age group
 
 }
