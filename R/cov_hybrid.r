@@ -1,4 +1,15 @@
 #' @export
+#'
+#' Solves a compartmental model for SARS-CoV-2 like model
+#'
+#' Description goes here
+#' 
+#' @param \alpha Description here
+#' @param \alpha Description here
+#'
+#' @return Add the return information here
+#'
+#' XXXX This function not fully implemented yet XXXX
 cov_hybrid <- function(R0 = 2.0,
                        Rp = 1.5,
                        Rover = 0.9,
