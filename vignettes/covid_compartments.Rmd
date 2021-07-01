@@ -1,0 +1,16 @@
+---
+title: "Covid Compartmental Models"
+author: "Steven Riley"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{covid-compartments}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+The second PCR-confirmed exported case of SARS-CoV-2 (as it would become known) was reported from Taiwan on 15th January 2021 in a traveller that returned from Wuhan, had already recovered from mild symptoms, and reported not having visited a market.
+
+

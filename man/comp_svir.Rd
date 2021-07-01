@@ -4,9 +4,20 @@
 \alias{comp_svir}
 \title{Solves the SVIR model}
 \usage{
-comp_svir(Tg = 2.8, R0 = 1.8, N = 1e+05, I0 = 1, V0 = 0,
-  dt = 0.1, startVac = 9999, vacRate = 0, noTimeSteps = 10 * 180,
-  noReals = 1, deterministic = TRUE, doPlot = FALSE)
+comp_svir(
+  Tg = 2.8,
+  R0 = 1.8,
+  N = 1e+05,
+  I0 = 1,
+  V0 = 0,
+  dt = 0.1,
+  startVac = 9999,
+  vacRate = 0,
+  noTimeSteps = 10 * 180,
+  noReals = 1,
+  deterministic = TRUE,
+  doPlot = FALSE
+)
 }
 \arguments{
 \item{Tg}{generation time}

@@ -4,8 +4,12 @@
 \alias{linear_regression}
 \title{performs linear regression for a given country and year}
 \usage{
-linear_regression(incidence_data, current_week = 47, n_weeks_prior = 4,
-  log_transform = TRUE)
+linear_regression(
+  incidence_data,
+  current_week = 47,
+  n_weeks_prior = 4,
+  log_transform = TRUE
+)
 }
 \arguments{
 \item{incidence_data}{data frame extracted by \code{extract_incidence}}

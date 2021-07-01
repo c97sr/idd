@@ -4,10 +4,25 @@
 \alias{comp_seir}
 \title{Solves the SEIR model}
 \usage{
-comp_seir(De = 7, Tg = 15, R0 = 1.8, N = 1e+06, I0 = 10,
-  trickle = 0, trickleStart = 0, reprate = 1, dt = 1, R1 = 1,
-  t1 = 999, R2 = 1, t2 = 9999, noTimeSteps = 360, noReals = 1,
-  A = 0, deterministic = TRUE)
+comp_seir(
+  De = 7,
+  Tg = 15,
+  R0 = 1.8,
+  N = 1e+06,
+  I0 = 10,
+  trickle = 0,
+  trickleStart = 0,
+  reprate = 1,
+  dt = 1,
+  R1 = 1,
+  t1 = 999,
+  R2 = 1,
+  t2 = 9999,
+  noTimeSteps = 360,
+  noReals = 1,
+  A = 0,
+  deterministic = TRUE
+)
 }
 \arguments{
 \item{De}{duration latent}

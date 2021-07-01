@@ -1,0 +1,18 @@
+---
+title: "Influenza Forecasting"
+author: "Steven Riley, Caroline Walters, Ada Yan"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{covid-uk-public}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Loading up the data
+
+```{r, echo = FALSE}
+library(idd)
+```
+
+The introduction will go here.
