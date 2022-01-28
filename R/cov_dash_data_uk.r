@@ -1,6 +1,5 @@
+#' Look here to figure out field names
 #' @export
-#'  Look here to figure out field names
-#' 
 load_uk_cov_data <- function(
                              at="region",
                              met1="newCasesBySpecimenDate",

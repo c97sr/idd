@@ -33,7 +33,6 @@
 #' incidence: numeric vector of the same length as t:
 #' incidence for those weeks
 #' @export
-#' 
 extract_incidence <- function(flu_data,
                               country_code = "ISR",
                               year = 2016) {
@@ -135,7 +134,6 @@ plot_incidence <- function(incidence_data, log_scale = FALSE) {
 #' @param n_weeks_prior numeric vector of length 1: number of weeks' previous data to use
 #' @return data frame for weeks of interest
 #' @export
-#' 
 subset_incidence_data <- function(incidence_data, current_week, n_weeks_prior) {
   end_row <- extract_week_index(current_week, incidence_data$time_name)
   start_row <- end_row - n_weeks_prior
@@ -151,7 +149,6 @@ subset_incidence_data <- function(incidence_data, current_week, n_weeks_prior) {
 #' @param time_name character vector with names of weeks
 #' @return numeric vector of length 1: index
 #' @export
-#' 
 extract_week_index <- function(week_no, time_name) {
   week_string <- as.character(week_no)
   if(week_no < 10) {
@@ -176,7 +173,6 @@ extract_week_index <- function(week_no, time_name) {
 #' original data
 #' @return linear regression object (see documentation for \code{lm})
 #' @export
-#' 
 linear_regression <- function(incidence_data,
                               current_week = 47,
                               n_weeks_prior = 4,
@@ -211,7 +207,6 @@ linear_regression <- function(incidence_data,
 #' was performed on original data
 #' @return data frame with predicted points and original data
 #' @export
-#' 
 extract_predicted_points <- function(lm_output, incidence_data, weeks_ahead,
                                       log_transform) {
   
@@ -252,7 +247,6 @@ extract_predicted_points <- function(lm_output, incidence_data, weeks_ahead,
 #' incidence according to model 
 #' @return log likelihood: numeric vector of length 1
 #' @export
-#' 
 calc_log_likelihood <- function(data, model_prediction) {
   # check that the number of data points is the same as the number of 
   # prediction points
@@ -295,7 +289,6 @@ calc_log_likelihood <- function(data, model_prediction) {
 #' R_0_vec: numeric vector of R_0 values which we're scanning over
 #' log_likelihood_vec: log likelihood for those values of R_0
 #' @export
-#' 
 likelihood_profile_seir <- function(incidence_data, current_week, starting_week, R_0_min, R_0_max) {
   
   # extract incidence data for weeks used to predict
@@ -333,7 +326,6 @@ likelihood_profile_seir <- function(incidence_data, current_week, starting_week,
 #' \code{likelihood_profile_seir}
 #' @return ggplot object
 #' @export
-#' 
 plot_likelihood_profile <- function(likelihood_profile_output) {
   ggplot(likelihood_profile_output, aes(x = R_0_vec, y = log_likelihood_vec)) +
     geom_line() + xlab ("R_0") + ylab("log likelihood")
@@ -496,20 +488,20 @@ solve_seir_wrapper <- function(R_0, n_weeks) {
 #' @param tolerance numeric vector of length 1: parameter specifying range
 #' within which the predicted incidence should fall.  For example, if 
 #' tolerance = 0.25, a predicted point is deemed to be accurate if the 
-#' predicted incidence is between 75% and 125% of the observed incidence.
+#' predicted incidence is between 75\% and 125\% of the observed incidence.
 #' @return numeric vector of length 1: the proportion of prediction points 
 #' which are within a given percentage threshold of the observed incidence
 #' @export
 #' 
 calc_prediction_accuracy <- function(prediction_df, tolerance = 0.25) {
-  # number of predicted points within threshold
-  n_accurate_points <- sum(prediction_df$prediction < prediction_df$incidence * (1 + tolerance) &
+    ## number of predicted points within threshold
+    n_accurate_points <- sum(prediction_df$prediction < prediction_df$incidence * (1 + tolerance) &
                            prediction_df$prediction > prediction_df$incidence * (1 - tolerance), 
                            na.rm = TRUE)
-  # number of predicted points
-  n_points <- sum(!is.na(prediction_df$prediction) & !is.na(prediction_df$incidence))
-  proportion <- n_accurate_points / n_points
-  return(proportion)
+    ## number of predicted points
+    n_points <- sum(!is.na(prediction_df$prediction) & !is.na(prediction_df$incidence))
+    proportion <- n_accurate_points / n_points
+    return(proportion)
 }
 
 #' extract subset of prediction data frame containing predictions
