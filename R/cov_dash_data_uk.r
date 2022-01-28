@@ -21,5 +21,6 @@ load_uk_cov_data <- function(
 ## Script to test the functions developed here
 if (FALSE) {
     x <- load_uk_cov_data(at="ltla")
-    dim(x)    
+    dim(x)
+    names(x)
 }
