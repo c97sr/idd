@@ -1,6 +1,6 @@
 ---
-title: "Influenza Forecasting"
-author: "Steven Riley, Caroline Walters, Ada Yan"
+title: "Routine output with UK COVID dashboard"
+author: "Steven Riley"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -15,4 +15,4 @@ vignette: >
 library(idd)
 ```
 
-The introduction will go here.
+The introduction will go here. ANd then I can add a little more.
