@@ -1,4 +1,5 @@
 #' Function to simulate an ncov-like brtanching process
+#' This might be useful for the border crossing work
 #' @export
 cov_branch <- function(
                      nreal=2,
