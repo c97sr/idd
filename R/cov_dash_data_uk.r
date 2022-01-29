@@ -23,4 +23,5 @@ if (FALSE) {
     x <- load_uk_cov_data(at="ltla")
     dim(x)
     names(x)
+    ## Put some charts in here
 }
