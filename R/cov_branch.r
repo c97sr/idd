@@ -39,7 +39,6 @@ cov_branch <- function(
     rtn_wiw_v2 <- array(dim=c(ninf,length(off),nreal))
     rtn_ons <- matrix(data=9999,nrow=ninf,ncol=nreal)
     rtn_trv <- matrix(data=9999,nrow=ninf,ncol=nreal)
-
     rtn_cty <- matrix(data=sample(1:length(casetypes),ninf*nreal,
                               replace=TRUE,prob=casetypes)
                  ,nrow=ninf,ncol=nreal)
@@ -78,7 +77,7 @@ cov_branch <- function(
             }
             cur_inf  <- cur_inf + 1
             if (cur_inf > ninf) {
-                stop("this loop should be deleted, probnot needed")
+                stop("this loop should be deleted, probably not needed")
                 still_run  <- FALSE
             }
         }
@@ -93,4 +92,8 @@ cov_branch <- function(
         trv=rtn_trv,
         cty=rtn_cty
     )    
+}
+
+if (FALSE) {
+    cov_branch()    
 }
