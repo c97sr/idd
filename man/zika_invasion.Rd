@@ -28,3 +28,7 @@ Simulates a stochastic compartmental model to reproduce an
 illustration of how two very similar communities might have
 very different initial epidemics.
 }
+\examples{
+zika_invasion(its=100,file="~/tmp/zika_example.pdf")
+zika_invasion(its=100,file="screen",N=1000000)
+}

@@ -25,8 +25,10 @@
 #' @param file name of file to write pdf or "screen"
 #' @param N size of population
 #'
-#' @example zika_invasion(its=100,file="~/tmp/zika_example.pdf")
-#' @example zika_invasion(its=100,file="screen",N=1000000)
+#' @examples 
+#' zika_invasion(its=100,file="~/tmp/zika_example.pdf")
+#' zika_invasion(its=100,file="screen",N=1000000)
+#' @export
 zika_invasion <- function(
     its=10,
     file="screen",

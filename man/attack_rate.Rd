@@ -12,3 +12,8 @@ attack_rate(R0 = 1.8)
 \description{
 Solves the classic relationship between R0 and cumulative attack rate
 }
+\examples{
+attack_rate(1.8)
+attack_rate(4.0)
+attack_rate(3.0)
+}
