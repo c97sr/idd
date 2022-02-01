@@ -1,4 +1,4 @@
-#' @export
+#' export
 cov_sitrep_tab <- function(df,
                            fldname="new_dx_total",
                            long=TRUE,
