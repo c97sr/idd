@@ -2,7 +2,7 @@
 % Please edit documentation in R/cov_branch.r
 \name{cov_branch}
 \alias{cov_branch}
-\title{Function to simulate an ncov-like brtanching process}
+\title{Simulates a stochastic epidemic being exported by air travel}
 \usage{
 cov_branch(
   nreal = 2,
@@ -21,5 +21,11 @@ cov_branch(
 )
 }
 \description{
-Function to simulate an ncov-like brtanching process
+Function to simulate an ncov-like brtanching process.
+This might be useful for the border crossing work
+Need to go through this and see if I cam make it more 
+relevant to omicron
+}
+\examples{
+cov_branch()
 }

@@ -1,4 +1,6 @@
-#' Function to simulate an ncov-like brtanching process
+#' Simulates a stochastic epidemic being exported by air travel
+#' 
+#' Function to simulate an ncov-like brtanching process.
 #' This might be useful for the border crossing work
 #' Need to go through this and see if I cam make it more 
 #' relevant to omicron
