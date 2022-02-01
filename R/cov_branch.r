@@ -2,6 +2,8 @@
 #' This might be useful for the border crossing work
 #' Need to go through this and see if I cam make it more 
 #' relevant to omicron
+#' @examples
+#' cov_branch()
 #' @export
 cov_branch <- function(
                      nreal=2,
