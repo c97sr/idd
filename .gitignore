@@ -38,3 +38,5 @@ Meta
 idd.Rcheck/
 idd*.tar.gz
 idd*.tgz
+/doc/
+/Meta/
