@@ -9,7 +9,13 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Loading up the data
+## Introduction
+
+This document is a vignette in the R package idd (infectious disease dynamics) which is hosted in github but the c97sr account. It is intended as a short tutorial for using data from the UK COVID-19 dashboard repository. 
+
+## Loading UK COVID-19 death data
+
+The UK Health Security Agency (UKHSA) provides access to public data about COVID 19. For any given day we can download the number of cases, hospitalizations and deaths. Deaths are reported on the dashboard in two different ways: people who die within 28 days of a positive test for COVID, regardless of the cause of death; and people who have COVID-19 mentioned on their death certificate. These data can be downloaded at the local authority level. 
 
 ```{r, echo = FALSE}
 library(idd)
