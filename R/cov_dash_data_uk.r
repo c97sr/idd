@@ -21,7 +21,7 @@ load_uk_cov_data <- function(
 ## Script to test the functions developed here
 if (FALSE) {
   
-  ## Load up some variables from the UK data 
+  ## Load up test variables from the UK data 
   x <- load_uk_cov_data(at="ltla")
   dim(x)
   names(x)
