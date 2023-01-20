@@ -28,8 +28,8 @@ if (FALSE) {
     ## Put some charts in here
 }
 
-if (false) {
+if (FALSE) {
 
-
+  ## Another block here if needed
     
 }
