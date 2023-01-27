@@ -41,6 +41,7 @@ The UK Health Security Agency (UKHSA) provides access to public data about COVID
 XX next edit the line below to read in deaths, hospitalizations and cases. XX
 
 ```{r, echo = FALSE}
+## If needed load_all()
 dat <- load_uk_cov_data()
 dim(dat)
 names(dat)
