@@ -14,8 +14,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this idsource.  If not, see <http://www.gnu.org/licenses/>.
-
 circle_plot <- function(wdir='~/png') {
+
+    if (FALSE) {
+        
+        x <- 2
+    }
 
   require("shape")
   frames = 110
