@@ -12,7 +12,7 @@ library(devtools)
 
 #' Install SR's idd package either from github or locally 
 ## install_github("c97sr/idd")
-install("~/gdrive/git/idd", dependencies=FALSE)
+## install("~/gdrive/git/idd", dependencies=FALSE)
 library("idd")
 
 #' Make an initial run for 2 years with an R0 of 2.0 in a UK-like
@@ -22,7 +22,7 @@ dt <- 0.1
 pop <- 66000000*c(0.25,0.25,0.25,0.25)
 seed <- rep(6000/length(pop),length(pop))
 xvals <- seq(0,540,dt)
-y1 <- cov_hybrid(
+y1 <- idd::cov_hybrid(
     vecN=pop,
     vecI0=seed,
     R0=2.0,

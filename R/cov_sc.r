@@ -5,7 +5,8 @@ cov_sc <- function(vecR0=seq(1.5,3,0.5),
                    vecSusChild=c(1,0.333)
                    ) {
 
-    ## Make the dataframe for the output. Define a signle row and then make
+    ## Make the dataframe for the output. Define a signle row and then 
+    ## make
     ## the return object by zeroing off the row
     one_row <- data.frame(R0=-1,sus=-1,tstart=-1,dur=-1,bpeak=-1,scpeak=-1,deltacar=-1)
     rtn_df <- one_row[-1,]
