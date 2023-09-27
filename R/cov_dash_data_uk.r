@@ -20,11 +20,15 @@ load_uk_cov_data <- function(
 
 ## Script to test the functions developed here
 if (FALSE) {
-  
+
+    ## If session starting here, might need to load the package
+    library("devtools")
+    load_all()
+
     ## Load up some variables from the UK data 
-    x <- load_uk_cov_data(at="ltla")
-    dim(x)
+    x <- load_uk_cov_data(at = "ltla") 
     names(x)
+    tail(x)
     ## Put some charts in here
 }
 
