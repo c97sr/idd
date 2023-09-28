@@ -2,6 +2,8 @@
 #' 
 #' ## Load functions and population data
 #' 
+#' Note that you need to look in the 
+#' 
 #' First clear memory. 
 rm(list=ls(all=TRUE))
 
@@ -154,6 +156,8 @@ round(sum(y4B$inf[,,1])/(sum(pop)/2)*100)
 #' there is a little bit of model here and its import that the NGM calc
 #' is correct
 
+yDat <- read.csv("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/excess_mortality/excess_mortality_economist_estimates.csv")
+
 #' Load a database of social mixing patterns
 library(socialmixr)
 data(polymod)
@@ -196,6 +200,9 @@ yB <- cov_hybrid(
 
 plot(rowSums(yA$inf[,,1]),log="y",col="red",ylim=c(0.1,5))
 points(rowSums(yB$inf[,,1]),col="blue")
+
+#' Load up the our world in data excess mortality
+ 
 
 #' Check to see if attack rates are about right with uniform mixing and
 #' uniform susceptibility and a perfectly balanced population. Seems to be OK
