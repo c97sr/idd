@@ -1,16 +1,16 @@
 #' # Compartmental model runs to support ongoing containment as a policy objective
-#' 
+#'
 #' ## Load functions and population data
-#' 
-#' First clear memory. 
+#'
+#' First clear memory.
 rm(list=ls(all=TRUE))
 
 #' Load functions to run the hybrid model from local packages, from github or directly from local copies
-#' if that is how the code has been distributed. 
+#' if that is how the code has been distributed.
 ## source("~/git/idd/R/cov_hybrid.r")
 library(devtools)
 
-#' Install SR's idd package either from github or locally 
+#' Install SR's idd package either from github or locally
 ## install_github("c97sr/idd")
 ## install("~/gdrive/git/idd", dependencies=FALSE)
 library("idd")
@@ -170,8 +170,8 @@ matpolyuk <- mixr_polyuk$matrix
 poppolyuk <- mixr_polyuk$demography$population
 
 #' ## Define susceptibiity profiles and school closure mixing
-#' 
-#' Establish some baseline values for susceptibility 
+#'
+#' Establish some baseline values for susceptibility
 susBase <- rep(1,nACs)
 susLowKids <- susBase
 susLowKids[1:4] <- 0.333
@@ -205,3 +205,15 @@ yC <- cov_hybrid(
 a <- sum(yC$inf[,,1])/sum(yC$pop)
 epsilon <- a + exp(-1.8*a) - 1
 epsilon
+
+
+#' Work to load up excess mortality data. This will go futehr up in the final
+#' version of thius
+x <- read.csv("https://raw.githubusercontent.com/owid/covid-19-data/4132d2c726fa406d5ff934b4f6411f463992a07d/public/data/excess_mortality/excess_mortality.csv")
+write.csv(x,file="C:/Users/sr/Documents/tmpdata/excess_death.csv")
+y <- read.csv("C:/Users/sr/Documents/tmpdata/excess_death.csv")
+dim(x)
+dim(y)
+names(x)
+names(y)
+
