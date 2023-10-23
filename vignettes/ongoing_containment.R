@@ -1,4 +1,17 @@
-#' # Compartmental model runs to support ongoing containment as a policy objective
+#' # Ongoing containment as a policy objective
+#'
+#' Script designed to be run with rmarkdown::render(), then run to
+#'
+#' ## Background
+#'
+#' This analysis was developed between mid-February and early morning of March
+#' 10th 2020. Initially, it was used to give early estimates of the possible
+#' impact of school closures.
+#'
+#' Needs
+#' - local install of packages for idd
+#' - local install of dplyr
+#'
 #'
 #' ## Load functions and population data
 #'
@@ -9,11 +22,13 @@ rm(list=ls(all=TRUE))
 #' if that is how the code has been distributed.
 ## source("~/git/idd/R/cov_hybrid.r")
 library(devtools)
+library(dplyr)
 
 #' Install SR's idd package either from github or locally
 ## install_github("c97sr/idd")
 ## install("~/gdrive/git/idd", dependencies=FALSE)
-library("idd")
+## library("idd")
+devtools::load_all()
 
 #' Make an initial run for 2 years with an R0 of 2.0 in a UK-like
 #' population, with a trickle seed of 10 cases per week and nop
@@ -203,17 +218,28 @@ points(rowSums(yB$inf[,,1]),col="blue")
 yC <- cov_hybrid(
     R0=1.8)
 a <- sum(yC$inf[,,1])/sum(yC$pop)
-epsilon <- a + exp(-1.8*a) - 1
+epsilon <- (a + exp(-1.8*a) - 1)/a
 epsilon
-
 
 #' Work to load up excess mortality data. This will go futehr up in the final
 #' version of thius
-x <- read.csv("https://raw.githubusercontent.com/owid/covid-19-data/4132d2c726fa406d5ff934b4f6411f463992a07d/public/data/excess_mortality/excess_mortality.csv")
-write.csv(x,file="C:/Users/sr/Documents/tmpdata/excess_death.csv")
-y <- read.csv("C:/Users/sr/Documents/tmpdata/excess_death.csv")
-dim(x)
+## webfn <- "https://raw.githubusercontent.com/owid/covid-19-data/4132d2c726fa406d5ff934b4f6411f463992a07d/public/data/excess_mortality/excess_mortality.csv"
+## x <- read.csv(webfn)
+## write.csv(x,file=localfn,row.names = FALSE)
+localfn <- "C:/Users/sr/Documents/tmpdata/excess_death.csv"
+y <- read.csv(localfn)
 dim(y)
-names(x)
 names(y)
 
+## all(dim(x) == dim(y))
+## all(names(x) == names(y))
+
+df <- y %>%
+  dplyr::filter(time_unit=="weekly", date < as.Date("2021-02-28")) %>%
+  dplyr::select("location", "cum_excess_per_million_proj_all_ages","date") %>%
+  tidyr::spread(location,cum_excess_per_million_proj_all_ages)
+
+plot(df$`United Kingdom`,type="l",col="blue",lwd=3)
+points(df$Australia,type="l",col="red",lwd=3)
+
+#' Now make some simple plots of cumulative covid deaths from the model
