@@ -2,7 +2,7 @@
 #' Solves a compartmental model for SARS-CoV-2 like model
 #'
 #' Description goes here
-#' 
+#'
 #' @param \alpha Description here
 #' @param \alpha Description here
 #'
@@ -41,8 +41,8 @@ cov_hybrid <- function(R0 = 2.0,
                        plot=FALSE,
                        trickle=0,
                        sevBchange=FALSE
-                       ) { 
-    
+                       ) {
+
     ## Define housekeeping variables
     nAges <- length(vecN)
     nTimes <- length(vecTcalc)
@@ -66,7 +66,9 @@ cov_hybrid <- function(R0 = 2.0,
     ## Declare items to be returned
     rtn_inf <- array(dim=c(nTimes,nAges,nReals))
     rtn_pop <- array(dim=c(nTimes,nAges,nReals))
-    
+    rtn_sev_treat <- array(dim=c(nTimes,nAges,nReals))
+    rtn_sev_untreat <- array(dim=c(nTimes,nAges,nReals))
+
     ## Create next generation matrix, assuming each severity level is an
     ## infectious type. Needs to be nested to 4 levels for infector and infectee
     ngm = matrix(ncol=nAges*nSevClasses,nrow=nAges*nSevClasses)
@@ -74,7 +76,7 @@ cov_hybrid <- function(R0 = 2.0,
         tor <- sevClassChars[i]
         for (j in 1:nAges) {
             for (k in 1:nSevClasses) {
-                tee <- sevClassChars[k] 
+                tee <- sevClassChars[k]
                 for (l in 1:nAges) {
                     ngm_col <- (i-1)*nAges + j
                     ngm_row <- (k-1)*nAges + l
@@ -137,7 +139,7 @@ cov_hybrid <- function(R0 = 2.0,
         vecProbExI_1A <- 1 - exp(-dt * vecHazExI_1A)
         vecProbExI_2A <- 1 - exp(-dt * vecHazExI_2A)
         vecProbExICU <- 1 - exp(-dt * vecHazExICU)
-        
+
         ## Initiate the return data structures
         rtn_inf[1,,i] <- vecI0
         rtn_pop[1,,i] <- sum(
@@ -145,12 +147,14 @@ cov_hybrid <- function(R0 = 2.0,
             I_1M,I_2M,I_1F,I_2F,
             I_1S,I_2S,I_1A,I_2A,
             ICU,R)
+        rtn_sev_treat[1,,i] <- rep(0,nAges)
+        rtn_sev_untreat[1,,i] <- rep(0,nAges)
 
         ## Initiate some non-state variables that are needed
         cumICU <- 0
         sevInICU <- rep(0,nAges)
         sevOutICU <- rep(0,nAges)
-        
+
         ## Initiate the time loop
         j <- 2
         while (j <= nTimes) {
@@ -160,7 +164,7 @@ cov_hybrid <- function(R0 = 2.0,
                 if ((sum(ICU) > maxICU) && sevBchange) {
                     beta_tmp <- beta * Rover / R0
                 } else {
-                    beta_tmp <- beta * Rp / R0 
+                    beta_tmp <- beta * Rp / R0
                 }
             } else {
                 beta_tmp <- beta
@@ -176,7 +180,7 @@ cov_hybrid <- function(R0 = 2.0,
             } else {
                 matCtTmp <- matCtClosure
             }
-            
+
             ## Calculate variable hazards
             vecFoi <-  beta_cur * vecSusTy * (
                 ((I_1M * vecInfNess) %*% matCtTmp) / vecN +
@@ -188,10 +192,10 @@ cov_hybrid <- function(R0 = 2.0,
                 ((I_1A * vecInfNess) %*% matCtTmp) / vecN +
                 ((I_2A * vecInfNess) %*% matCtTmp) / vecN
             ) + trickle / (totalN * 7 * dt * nAges)
-            
+
             ## Calculate variable probabilites
             pVecFoi <- 1 - exp(-dt*vecFoi)
-            
+
             ## Either draw random numbers or calculate averages
             ## Currently just below here
             if (deterministic) {
@@ -216,7 +220,7 @@ cov_hybrid <- function(R0 = 2.0,
                 noEntI1S <- rbinom(nAges, noExE, vecPS)
                 noEntI1M <- rbinom(nAges, noExE - noEntI1S, vecPMcond)
                 noEntI1A <- rbinom(nAges, noExE - noEntI1S - noEntI1M, vecPAcond)
-                noEntI1F <- noExE - noEntI1S - noEntI1M - noEntI1A                        
+                noEntI1F <- noExE - noEntI1S - noEntI1M - noEntI1A
                 noExI_1M <- rbinom(nAges,I_1M,vecProbExI_1M)
                 noExI_2M <- rbinom(nAges,I_2M,vecProbExI_2M)
                 noExI_1F <- rbinom(nAges,I_1F,vecProbExI_1F)
@@ -233,14 +237,16 @@ cov_hybrid <- function(R0 = 2.0,
             capICU <- maxICU - sum(ICU)
             if (capICU > sum(ICU)) {
                     sevInICU <- sevInICU + noExI_2S
+                    rtn_sev_treat[j,,i] <- noExI_2S
                 } else if (capICU <= 0) {
                     sevOutICU <- sevOutICU + noExI_2S
+                    rtn_sev_untreat[j,,i] <- noExI_2S
                 } else {
                     ## TODO age prioritization here
                     sevOutICU <- sevOutICU + noExI_2S
+                    rtn_sev_untreat[j,,i] <- noExI_2S
                 }
 
-            
             ## Update the state variables
             ## Problems are probably here
             S <- S - noInf
@@ -263,18 +269,24 @@ cov_hybrid <- function(R0 = 2.0,
                                  I_1S,I_2S,I_1A,I_2A,
                                  ICU,R)
             cumICU <- cumICU + sum(noExI_2S)
-            
+
             ## Close off the loop
             j <- j+1
-            
+
         }
     }
 
     ## Make derived outputs
     rtn_inf_cum <- array(dim=c(nTimes,nAges,nReals))
+    rtn_sev_cum_treat <- array(dim=c(nTimes,nAges,nReals))
+    rtn_sev_cum_untreat <- array(dim=c(nTimes,nAges,nReals))
     rtn_inf_cum[1,,] <- rtn_inf[1,,]
+    rtn_sev_cum_treat[1,,] <- rtn_sev_treat[1,,]
+    rtn_sev_cum_untreat[1,,] <- rtn_sev_untreat[1,,]
     for (i in 2:nTimes) {
         rtn_inf_cum[i,,] <- rtn_inf_cum[i-1,,] + rtn_inf[i,,]
+        rtn_sev_cum_treat[i,,] <- rtn_sev_cum_treat[i-1,,] + rtn_sev_treat[i,,]
+        rtn_sev_cum_untreat[i,,] <- rtn_sev_cum_untreat[i-1,,] + rtn_sev_untreat[i,,]
     }
 
     ## Plot a quick diagnostic, mainly for dbugging the flow equations
@@ -286,12 +298,14 @@ cov_hybrid <- function(R0 = 2.0,
         )
         points(vecTcalc/30,rowSums(rtn_inf[,,1])+1)
     }
-    
+
     ## Return the outputs, expand as necessary
     list(inf=rtn_inf,
          cinf=rtn_inf_cum,
          sevIn=sum(sevInICU),
          sevOut=sum(sevOutICU),
+         csevtreat=rtn_sev_cum_treat,
+         csevuntreat=rtn_sev_cum_untreat,
          t=vecTcalc,
          pop=vecN)
 

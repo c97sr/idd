@@ -28,7 +28,6 @@ library(dplyr)
 ## install_github("c97sr/idd")
 ## install("~/gdrive/git/idd", dependencies=FALSE)
 ## library("idd")
-devtools::load_all()
 
 #' Make an initial run for 2 years with an R0 of 2.0 in a UK-like
 #' population, with a trickle seed of 10 cases per week and nop
@@ -50,6 +49,7 @@ y1 <- idd::cov_hybrid(
     trickle=10,
     vecTcalc=xvals)
 #' Then run with a reactive drop when the virus is known to be present
+devtools::load_all()
 y2 <- cov_hybrid(
     vecN=pop,
     vecI0=seed,
@@ -228,16 +228,20 @@ epsilon
 ## write.csv(x,file=localfn,row.names = FALSE)
 localfn <- "C:/Users/sr/Documents/tmpdata/excess_death.csv"
 y <- read.csv(localfn)
-dim(y)
 names(y)
+dim(y)
 
 ## all(dim(x) == dim(y))
 ## all(names(x) == names(y))
-
 df <- y %>%
-  dplyr::filter(time_unit=="weekly", date < as.Date("2021-02-28")) %>%
+  dplyr::filter(time_unit=="weekly", date < as.Date("2021-08-31")) %>%
   dplyr::select("location", "cum_excess_per_million_proj_all_ages","date") %>%
   tidyr::spread(location,cum_excess_per_million_proj_all_ages)
+
+dim(df)
+names(df)
+
+plot(y2$t,rowSums(y2$csevtreat[,,1]),type="l",ylim=c(0,10000))
 
 plot(df$`United Kingdom`,type="l",col="blue",lwd=3)
 points(df$Australia,type="l",col="red",lwd=3)
