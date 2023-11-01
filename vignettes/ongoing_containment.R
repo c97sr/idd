@@ -169,57 +169,6 @@ round(sum(y4B$inf[,,1])/(sum(pop)/2)*100)
 #' there is a little bit of model here and its import that the NGM calc
 #' is correct
 
-#' Load a database of social mixing patterns
-library(socialmixr)
-data(polymod)
-age_bounds <- c(0,5,11,18,30)
-nACs <- length(age_bounds)
-mixr_polyuk <- contact_matrix(
-    polymod,
-    countries="Great Britain",
-    age.limits = age_bounds,
-    symmetric=TRUE)
-
-#' Extract basic contact matrices
-matpolyuk <- mixr_polyuk$matrix
-poppolyuk <- mixr_polyuk$demography$population
-
-#' ## Define susceptibiity profiles and school closure mixing
-#'
-#' Establish some baseline values for susceptibility
-susBase <- rep(1,nACs)
-susLowKids <- susBase
-susLowKids[1:4] <- 0.333
-
-#' Run two test cases for the R0 parameterization
-yA <- cov_hybrid(
-    vecN=poppolyuk,
-    R0=1.01,
-    matCt=matpolyuk,
-    vecTcal=seq(0,20,0.001),
-    vecInfNess=rep(1,nACs),
-    vecSusTy=susLowKids,
-    deterministic=TRUE)
-yB <- cov_hybrid(
-    vecN=poppolyuk,
-    R0=0.99,
-    matCt=matpolyuk,
-    vecTcal=seq(0,20,0.001),
-    vecInfNess=rep(1,nACs),
-    vecSusTy=susLowKids,
-    deterministic=TRUE)
-
-plot(rowSums(yA$inf[,,1]),log="y",col="red",ylim=c(0.1,5))
-points(rowSums(yB$inf[,,1]),col="blue")
-
-#' Check to see if attack rates are about right with uniform mixing and
-#' uniform susceptibility and a perfectly balanced population. Seems to be OK
-#' to within half a percent.
-yC <- cov_hybrid(
-    R0=1.8)
-a <- sum(yC$inf[,,1])/sum(yC$pop)
-epsilon <- (a + exp(-1.8*a) - 1)/a
-epsilon
 
 #' Work to load up excess mortality data. This will go futehr up in the final
 #' version of thius

@@ -1,7 +1,11 @@
 #' @export
 #' Solves a compartmental model for SARS-CoV-2 like model
 #'
-#' Description goes here
+#' Basic compartmental model for age-structured covid. Can run as
+#' deterministic or stochastic on fixed time step. Has severity structure
+#' with finite capacity for severe cases. Useful edge-case tests implemented
+#' at the end of the function script in an "if (FALSE) {...}" block. These
+#' could be added to a model intro vingette at some point.
 #'
 #' @param \alpha Description here
 #' @param \alpha Description here
@@ -308,5 +312,63 @@ cov_hybrid <- function(R0 = 2.0,
          csevuntreat=rtn_sev_cum_untreat,
          t=vecTcalc,
          pop=vecN)
+
+}
+
+if (FALSE) {
+
+  #' Load a database of social mixing patterns
+  library(socialmixr)
+  library(devtools)
+  load_all()
+  data(polymod)
+  age_bounds <- c(0,5,11,18,30)
+  nACs <- length(age_bounds)
+  mixr_polyuk <- contact_matrix(
+    polymod,
+    countries="Great Britain",
+    age.limits = age_bounds,
+    symmetric=TRUE)
+
+  #' Extract basic contact matrices
+  matpolyuk <- mixr_polyuk$matrix
+  poppolyuk <- mixr_polyuk$demography$population
+
+  #' ## Define susceptibiity profiles and school closure mixing
+  #'
+  #' Establish some baseline values for susceptibility
+  susBase <- rep(1,nACs)
+  susLowKids <- susBase
+  susLowKids[1:4] <- 0.333
+
+  #' Run two test cases for the R0 parameterization
+  yA <- cov_hybrid(
+    vecN=poppolyuk,
+    R0=1.01,
+    matCt=matpolyuk,
+    vecTcal=seq(0,20,0.001),
+    vecInfNess=rep(1,nACs),
+    vecSusTy=susLowKids,
+    deterministic=TRUE)
+  yB <- cov_hybrid(
+    vecN=poppolyuk,
+    R0=0.99,
+    matCt=matpolyuk,
+    vecTcal=seq(0,20,0.001),
+    vecInfNess=rep(1,nACs),
+    vecSusTy=susLowKids,
+    deterministic=TRUE)
+
+  plot(rowSums(yA$inf[,,1]),log="y",col="red",ylim=c(0.1,5))
+  points(rowSums(yB$inf[,,1]),col="blue")
+
+  #' Check to see if attack rates are about right with uniform mixing and
+  #' uniform susceptibility and a perfectly balanced population. Seems to be OK
+  #' to within half a percent.
+  yC <- cov_hybrid(
+    R0=1.8)
+  a <- sum(yC$inf[,,1])/sum(yC$pop)
+  epsilon <- (a + exp(-1.8*a) - 1)/a
+  epsilon
 
 }
