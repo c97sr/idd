@@ -10,10 +10,9 @@
 #'
 #' Next steps
 #'
-#' * add the alternative excess mortality data
-#' * add the processed excess mortality as a data object to the package
 #' * fix the cumulative excess mortality so it works even when the ICU limit
 #' hit
+#' * add the processed excess mortality as a data object to the package
 #'
 #' ## Load functions and population data
 #'
@@ -159,6 +158,20 @@ tabdisp(y4$sevIn*0.2 + y4$sevOut)
 tabdisp(y4A$sevIn*0.2 + y4A$sevOut)
 tabdisp(y4B$sevIn*0.2 + y4B$sevOut)
 
+#' Plot cumulative deaths for different scenarios
+#' Plot
+par(mfrow=c(1,1))
+plot(0:1,type="n",ylim=c(0,4000),xlim=c(0,600/7),
+     ylab="Cum COVID-19 Deaths",xlab="Time")
+y_scen1 <- (rowSums(0.2*y1$csevtreat[,,1])+rowSums(y1$csevuntreat[,,1]))/sum(pop)*100000
+points(y1$t/7,y_scen1,type="l")
+y_scen2 <- (rowSums(0.2*y2$csevtreat[,,1])+rowSums(y2$csevuntreat[,,1]))/sum(pop)*100000
+points(y2$t/7,y_scen2,type="l")
+y_scen4 <- (rowSums(0.2*y4$csevtreat[,,1])+rowSums(y4$csevuntreat[,,1]))/sum(pop)*100000
+points(y4$t/7,y_scen4,type="l")
+y_scen4a <- (rowSums(0.2*y4$csevtreat[,,1])+0.6*rowSums(y4$csevuntreat[,,1]))/sum(pop)*100000
+points(y4$t/7,y_scen4a,type="l")
+
 #' Output the proportion of herd immunity acheived at 18 months
 round(sum(y1$inf[,,1])/(sum(pop)/2)*100)
 round(sum(y2$inf[,,1])/(sum(pop)/2)*100)
@@ -217,19 +230,30 @@ dindex <- which(colnames=="date")
 countries <- colnames[-c(windex,dindex)]
 ncountries <- length(countries)
 
-par(mfrow=c(1,1))
-plot(y2$t,rowSums(y2$csevtreat[,,1]),type="l",ylim=c(0,10000))
-
-plot(0:1,type="n",ylim=c(-10,600),xlim=c(0,90),
-     ylab="Excess mort per 100k",xlab="Time")
-for (c in countries) {
-  points(df2[,c],type="l",col="grey",lwd=0.5)
+plot_cum <- function(ymax=4000) {
+  plot(0:1,type="n",ylim=c(-10,ymax),xlim=c(0,75),
+       ylab="Excess mort per 100k",xlab="Time",log="y")
+  points(y1$t/7,y_scen1,type="l",col="black",lwd=3)
+  points(y2$t/7,y_scen2,type="l",col="black",lwd=3)
+  points(y4$t/7,y_scen4,type="l",col="black",lwd=3)
+  points(y4$t/7,y_scen4a,type="l",col="black",lwd=3)
+  for (c in countries) {
+    points(df2[,c],type="l",col="grey",lwd=0.5)
+  }
+  points(df2$`United Kingdom`,type="l",col="blue",lwd=3)
+  points(df2$Australia,type="l",col="red",lwd=3)
+  points(df2$China,type="l",col="green",lwd=3)
+  points(df2$`United States`,type="l",col="cyan",lwd=3)
+  points(df2$Norway,type="l",col="magenta",lwd=3)
+  points(df2$Taiwan,type="l",col="orange",lwd=3)
 }
-points(df2$`United Kingdom`,type="l",col="blue",lwd=3)
-points(df2$Australia,type="l",col="red",lwd=3)
-points(df2$China,type="l",col="green",lwd=3)
-points(df2$`United States`,type="l",col="cyan",lwd=3)
-points(df2$Norway,type="l",col="magenta",lwd=3)
-points(df2$Taiwan,type="l",col="orange",lwd=3)
+
+plot_cum(4000)
+plot_cum(600)
+
+plot(0:1,type="n",ylim=c(-10,4000),xlim=c(0,75),
+     ylab="Excess mort per 100k",xlab="Time")
+plot_cum()
+
 
 #' Now make some simple plots of cumulative covid deaths from the model

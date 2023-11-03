@@ -238,17 +238,21 @@ cov_hybrid <- function(R0 = 2.0,
 
             ## Count severe people making it into ICU and those not making
             ## it into ICU
+            ## Generating some ICU
             capICU <- maxICU - sum(ICU)
             if (capICU > sum(ICU)) {
                     sevInICU <- sevInICU + noExI_2S
                     rtn_sev_treat[j,,i] <- noExI_2S
+                    rtn_sev_untreat[j,,i] <- rep(0,nAges)
                 } else if (capICU <= 0) {
                     sevOutICU <- sevOutICU + noExI_2S
                     rtn_sev_untreat[j,,i] <- noExI_2S
+                    rtn_sev_treat[j,,i] <- rep(0,nAges)
                 } else {
                     ## TODO age prioritization here
                     sevOutICU <- sevOutICU + noExI_2S
                     rtn_sev_untreat[j,,i] <- noExI_2S
+                    rtn_sev_treat[j,,i] <- rep(0,nAges)
                 }
 
             ## Update the state variables
