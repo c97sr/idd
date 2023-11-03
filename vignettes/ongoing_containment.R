@@ -8,10 +8,12 @@
 #' 10th 2020. Initially, it was used to give early estimates of the possible
 #' impact of school closures.
 #'
-#' Needs
-#' - local install of packages for idd
-#' - local install of dplyr
+#' Next steps
 #'
+#' * add the alternative excess mortality data
+#' * add the processed excess mortality as a data object to the package
+#' * fix the cumulative excess mortality so it works even when the ICU limit
+#' hit
 #'
 #' ## Load functions and population data
 #'
@@ -172,13 +174,21 @@ round(sum(y4B$inf[,,1])/(sum(pop)/2)*100)
 
 #' Work to load up excess mortality data. This will go futehr up in the final
 #' version of thius
+localfn <- "C:/Users/sr/Documents/tmpdata/excess_death.csv"
+localfn_w <- "C:/Users/sr/Documents/tmpdata/excess_death_econ.csv"
 ## webfn <- "https://raw.githubusercontent.com/owid/covid-19-data/4132d2c726fa406d5ff934b4f6411f463992a07d/public/data/excess_mortality/excess_mortality.csv"
 ## x <- read.csv(webfn)
 ## write.csv(x,file=localfn,row.names = FALSE)
-localfn <- "C:/Users/sr/Documents/tmpdata/excess_death.csv"
+wwebfn <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/excess_mortality/excess_mortality_economist_estimates.csv"
+w <- read.csv(wwebfn)
+write.csv(w,file=localfn_w,row.names=FALSE)
+
 y <- read.csv(localfn)
-names(y)
-dim(y)
+z <- read.csv(localfn_w)
+names(z)
+dim(z)
+
+length(table(z$country))
 
 ## all(dim(x) == dim(y))
 ## all(names(x) == names(y))
