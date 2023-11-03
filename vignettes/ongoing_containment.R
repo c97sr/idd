@@ -179,10 +179,11 @@ localfn_w <- "C:/Users/sr/Documents/tmpdata/excess_death_econ.csv"
 ## webfn <- "https://raw.githubusercontent.com/owid/covid-19-data/4132d2c726fa406d5ff934b4f6411f463992a07d/public/data/excess_mortality/excess_mortality.csv"
 ## x <- read.csv(webfn)
 ## write.csv(x,file=localfn,row.names = FALSE)
-wwebfn <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/excess_mortality/excess_mortality_economist_estimates.csv"
-w <- read.csv(wwebfn)
-write.csv(w,file=localfn_w,row.names=FALSE)
+## wwebfn <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/excess_mortality/excess_mortality_economist_estimates.csv"
+## w <- read.csv(wwebfn)
+## write.csv(w,file=localfn_w,row.names=FALSE)
 
+#' These bits need to be coded as a data object
 y <- read.csv(localfn)
 z <- read.csv(localfn_w)
 names(z)
@@ -195,14 +196,40 @@ length(table(z$country))
 df <- y %>%
   dplyr::filter(time_unit=="weekly", date < as.Date("2021-08-31")) %>%
   dplyr::select("location", "cum_excess_per_million_proj_all_ages","date") %>%
-  tidyr::spread(location,cum_excess_per_million_proj_all_ages)
-
+  dplyr::rename("cumexcess" = "cum_excess_per_million_proj_all_ages",
+                "country"="location") %>%
+  tidyr::spread(country,cumexcess)
 dim(df)
 names(df)
 
+df2 <- z %>%
+  dplyr::filter(date < as.Date("2021-08-31")) %>%
+  dplyr::select("date","country",
+               "cumulative_estimated_daily_excess_deaths_per_100k") %>%
+  dplyr::rename("cumexcess" =
+                  "cumulative_estimated_daily_excess_deaths_per_100k") %>%
+  tidyr::spread(country,cumexcess)
+
+dim(df2)
+colnames <- names(df2)
+windex <- which(colnames=="World")
+dindex <- which(colnames=="date")
+countries <- colnames[-c(windex,dindex)]
+ncountries <- length(countries)
+
+par(mfrow=c(1,1))
 plot(y2$t,rowSums(y2$csevtreat[,,1]),type="l",ylim=c(0,10000))
 
-plot(df$`United Kingdom`,type="l",col="blue",lwd=3)
-points(df$Australia,type="l",col="red",lwd=3)
+plot(0:1,type="n",ylim=c(-10,600),xlim=c(0,90),
+     ylab="Excess mort per 100k",xlab="Time")
+for (c in countries) {
+  points(df2[,c],type="l",col="grey",lwd=0.5)
+}
+points(df2$`United Kingdom`,type="l",col="blue",lwd=3)
+points(df2$Australia,type="l",col="red",lwd=3)
+points(df2$China,type="l",col="green",lwd=3)
+points(df2$`United States`,type="l",col="cyan",lwd=3)
+points(df2$Norway,type="l",col="magenta",lwd=3)
+points(df2$Taiwan,type="l",col="orange",lwd=3)
 
 #' Now make some simple plots of cumulative covid deaths from the model
