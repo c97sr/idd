@@ -10,13 +10,11 @@
 #'
 #' Next steps
 #'
-#' * fix the cumulative excess mortality so it works even when the ICU limit
-#' hit
 #' * add the processed excess mortality as a data object to the package
 #'
 #' ## Load functions and population data
 #'
-#' First clear memory.
+#' First clear memory
 rm(list=ls(all=TRUE))
 
 #' Load functions to run the hybrid model from local packages, from github or directly from local copies
@@ -27,8 +25,8 @@ library(dplyr)
 
 #' Install SR's idd package either from github or locally
 ## install_github("c97sr/idd")
-## install("~/gdrive/git/idd", dependencies=FALSE)
-## library("idd")
+## devtools::load_all()
+library("idd")
 
 #' Make an initial run for 2 years with an R0 of 2.0 in a UK-like
 #' population, with a trickle seed of 10 cases per week and nop
@@ -232,7 +230,7 @@ ncountries <- length(countries)
 
 plot_cum <- function(ymax=4000) {
   plot(0:1,type="n",ylim=c(-10,ymax),xlim=c(0,75),
-       ylab="Excess mort per 100k",xlab="Time",log="y")
+       ylab="Excess mort per 100k",xlab="Time")
   points(y1$t/7,y_scen1,type="l",col="black",lwd=3)
   points(y2$t/7,y_scen2,type="l",col="black",lwd=3)
   points(y4$t/7,y_scen4,type="l",col="black",lwd=3)
@@ -247,13 +245,5 @@ plot_cum <- function(ymax=4000) {
   points(df2$Norway,type="l",col="magenta",lwd=3)
   points(df2$Taiwan,type="l",col="orange",lwd=3)
 }
-
 plot_cum(4000)
 plot_cum(600)
-
-plot(0:1,type="n",ylim=c(-10,4000),xlim=c(0,75),
-     ylab="Excess mort per 100k",xlab="Time")
-plot_cum()
-
-
-#' Now make some simple plots of cumulative covid deaths from the model
