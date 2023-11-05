@@ -25,6 +25,7 @@ library(dplyr)
 
 #' Install SR's idd package either from github or locally
 ## install_github("c97sr/idd")
+## devtools::uninstall()
 ## devtools::load_all()
 library("idd")
 
@@ -185,8 +186,8 @@ round(sum(y4B$inf[,,1])/(sum(pop)/2)*100)
 
 #' Work to load up excess mortality data. This will go futehr up in the final
 #' version of thius
-localfn <- "C:/Users/sr/Documents/tmpdata/excess_death.csv"
-localfn_w <- "C:/Users/sr/Documents/tmpdata/excess_death_econ.csv"
+localfn <- "/mnt/c/Users/sr/Documents/tmpdata/excess_death.csv"
+localfn_w <- "/mnt/c/Users/sr/Documents/tmpdata/excess_death_econ.csv"
 ## webfn <- "https://raw.githubusercontent.com/owid/covid-19-data/4132d2c726fa406d5ff934b4f6411f463992a07d/public/data/excess_mortality/excess_mortality.csv"
 ## x <- read.csv(webfn)
 ## write.csv(x,file=localfn,row.names = FALSE)
