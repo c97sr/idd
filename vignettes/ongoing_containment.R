@@ -1,12 +1,19 @@
-#' # Ongoing containment as a policy objective
+#' ---
+#' title: "Ongoing containment as a policy objective"
+#' author: Steven Riley
+#' date: late 2023
+#' output: html_document
+#' ---
+#' 
+#' # 
 #'
-#' Script designed to be run with rmarkdown::render(), then run to
+#' Script designed to be run with library(rmarkdown) rmarkdown::render(), then run to
 #'
 #' ## Background
 #'
-#' This analysis was developed between mid-February and early morning of March
-#' 10th 2020. Initially, it was used to give early estimates of the possible
-#' impact of school closures.
+#' This analysis was initially developed between mid-February and early morning of March
+#' 10th 2020. It was used to give early estimates of the possible impact of school
+#' closures.
 #'
 #' Next steps
 #'
@@ -29,13 +36,18 @@ library(dplyr)
 ## devtools::load_all()
 library("idd")
 
-#' Make an initial run for 2 years with an R0 of 2.0 in a UK-like
-#' population, with a trickle seed of 10 cases per week and nop
-#' reactive behaviour change
+#' Setup a population of size 66 million with a small timestep, and assume
+#' that there were 6000 infectious individuals at time 0. There are four groups
+#' in the model which would normally represent age groups. However, they are all
+#' assumed to be eqactly equal.
 dt <- 0.1
 pop <- 66000000*c(0.25,0.25,0.25,0.25)
 seed <- rep(6000/length(pop),length(pop))
 xvals <- seq(0,540,dt)
+
+#' Make an initial run for 2 years with an R0 of 2.0 in a UK-like
+#' population, with a trickle seed of 10 cases per week and nop
+#' reactive behaviour change.
 y1 <- idd::cov_hybrid(
     vecN=pop,
     vecI0=seed,
@@ -138,10 +150,8 @@ for (s in c("","y")) {
     points(y4B$t/30,rowSums(y4B$inf[,,1]/dt+1),col="magenta",type="l",lwd=2)
 }
 
-#' Define the format for the table
+#' Define a function to then output the total amount of infection
 tabdisp <- function(x)(formatC(signif(x,3), format="f", big.mark=",", digits=0))
-
-#' Output the total amount of infection
 tabdisp(sum(y1$inf[,,1]))
 tabdisp(sum(y2$inf[,,1]))
 tabdisp(sum(y3$inf[,,1]))
