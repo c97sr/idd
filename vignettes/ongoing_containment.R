@@ -1,29 +1,53 @@
-#' # Compartmental model runs to support ongoing containment as a policy objective
+#' ---
+#' title: "Ongoing containment as a policy objective"
+#' author: Steven Riley
+#' date: late 2023
+#' output: html_document
+#' ---
 #' 
+#' # 
+#'
+#' Script designed to be run with library(rmarkdown) rmarkdown::render(), then run to
+#'
+#' ## Background
+#'
+#' This analysis was initially developed between mid-February and early morning of March
+#' 10th 2020. It was used to give early estimates of the possible impact of school
+#' closures.
+#'
+#' Next steps
+#'
+#' * add the processed excess mortality as a data object to the package
+#'
 #' ## Load functions and population data
-#' 
-#' Note that you need to look in the 
-#' 
-#' First clear memory. 
+#'
+#' First clear memory
 rm(list=ls(all=TRUE))
 
 #' Load functions to run the hybrid model from local packages, from github or directly from local copies
-#' if that is how the code has been distributed. 
+#' if that is how the code has been distributed.
 ## source("~/git/idd/R/cov_hybrid.r")
 library(devtools)
+library(dplyr)
 
-#' Install SR's idd package either from github or locally 
+#' Install SR's idd package either from github or locally
 ## install_github("c97sr/idd")
-## install("~/gdrive/git/idd", dependencies=FALSE)
+## devtools::uninstall()
+## devtools::load_all()
 library("idd")
 
-#' Make an initial run for 2 years with an R0 of 2.0 in a UK-like
-#' population, with a trickle seed of 10 cases per week and nop
-#' reactive behaviour change
+#' Setup a population of size 66 million with a small timestep, and assume
+#' that there were 6000 infectious individuals at time 0. There are four groups
+#' in the model which would normally represent age groups. However, they are all
+#' assumed to be eqactly equal.
 dt <- 0.1
 pop <- 66000000*c(0.25,0.25,0.25,0.25)
 seed <- rep(6000/length(pop),length(pop))
 xvals <- seq(0,540,dt)
+
+#' Make an initial run for 2 years with an R0 of 2.0 in a UK-like
+#' population, with a trickle seed of 10 cases per week and nop
+#' reactive behaviour change.
 y1 <- idd::cov_hybrid(
     vecN=pop,
     vecI0=seed,
@@ -37,6 +61,7 @@ y1 <- idd::cov_hybrid(
     trickle=10,
     vecTcalc=xvals)
 #' Then run with a reactive drop when the virus is known to be present
+devtools::load_all()
 y2 <- cov_hybrid(
     vecN=pop,
     vecI0=seed,
@@ -125,10 +150,8 @@ for (s in c("","y")) {
     points(y4B$t/30,rowSums(y4B$inf[,,1]/dt+1),col="magenta",type="l",lwd=2)
 }
 
-#' Define the format for the table
+#' Define a function to then output the total amount of infection
 tabdisp <- function(x)(formatC(signif(x,3), format="f", big.mark=",", digits=0))
-
-#' Output the total amount of infection
 tabdisp(sum(y1$inf[,,1]))
 tabdisp(sum(y2$inf[,,1]))
 tabdisp(sum(y3$inf[,,1]))
@@ -144,6 +167,20 @@ tabdisp(y4$sevIn*0.2 + y4$sevOut)
 tabdisp(y4A$sevIn*0.2 + y4A$sevOut)
 tabdisp(y4B$sevIn*0.2 + y4B$sevOut)
 
+#' Plot cumulative deaths for different scenarios
+#' Plot
+par(mfrow=c(1,1))
+plot(0:1,type="n",ylim=c(0,4000),xlim=c(0,600/7),
+     ylab="Cum COVID-19 Deaths",xlab="Time")
+y_scen1 <- (rowSums(0.2*y1$csevtreat[,,1])+rowSums(y1$csevuntreat[,,1]))/sum(pop)*100000
+points(y1$t/7,y_scen1,type="l")
+y_scen2 <- (rowSums(0.2*y2$csevtreat[,,1])+rowSums(y2$csevuntreat[,,1]))/sum(pop)*100000
+points(y2$t/7,y_scen2,type="l")
+y_scen4 <- (rowSums(0.2*y4$csevtreat[,,1])+rowSums(y4$csevuntreat[,,1]))/sum(pop)*100000
+points(y4$t/7,y_scen4,type="l")
+y_scen4a <- (rowSums(0.2*y4$csevtreat[,,1])+0.6*rowSums(y4$csevuntreat[,,1]))/sum(pop)*100000
+points(y4$t/7,y_scen4a,type="l")
+
 #' Output the proportion of herd immunity acheived at 18 months
 round(sum(y1$inf[,,1])/(sum(pop)/2)*100)
 round(sum(y2$inf[,,1])/(sum(pop)/2)*100)
@@ -152,63 +189,67 @@ round(sum(y4$inf[,,1])/(sum(pop)/2)*100)
 round(sum(y4A$inf[,,1])/(sum(pop)/2)*100)
 round(sum(y4B$inf[,,1])/(sum(pop)/2)*100)
 
-#' Include some model calibration runs as evidence of correctness because
-#' there is a little bit of model here and its import that the NGM calc
-#' is correct
+#' Work to load up excess mortality data. This will go futehr up in the final
+#' version of thius
+localfn <- "/mnt/c/Users/sr/Documents/tmpdata/excess_death.csv"
+localfn_w <- "/mnt/c/Users/sr/Documents/tmpdata/excess_death_econ.csv"
+## webfn <- "https://raw.githubusercontent.com/owid/covid-19-data/4132d2c726fa406d5ff934b4f6411f463992a07d/public/data/excess_mortality/excess_mortality.csv"
+## x <- read.csv(webfn)
+## write.csv(x,file=localfn,row.names = FALSE)
+## wwebfn <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/excess_mortality/excess_mortality_economist_estimates.csv"
+## w <- read.csv(wwebfn)
+## write.csv(w,file=localfn_w,row.names=FALSE)
 
-yDat <- read.csv("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/excess_mortality/excess_mortality_economist_estimates.csv")
+#' These bits need to be coded as a data object
+y <- read.csv(localfn)
+z <- read.csv(localfn_w)
+names(z)
+dim(z)
 
-#' Load a database of social mixing patterns
-library(socialmixr)
-data(polymod)
-age_bounds <- c(0,5,11,18,30)
-nACs <- length(age_bounds)
-mixr_polyuk <- contact_matrix(
-    polymod,
-    countries="Great Britain",
-    age.limits = age_bounds,
-    symmetric=TRUE)
+length(table(z$country))
 
-#' Extract basic contact matrices
-matpolyuk <- mixr_polyuk$matrix
-poppolyuk <- mixr_polyuk$demography$population
+## all(dim(x) == dim(y))
+## all(names(x) == names(y))
+df <- y %>%
+  dplyr::filter(time_unit=="weekly", date < as.Date("2021-08-31")) %>%
+  dplyr::select("location", "cum_excess_per_million_proj_all_ages","date") %>%
+  dplyr::rename("cumexcess" = "cum_excess_per_million_proj_all_ages",
+                "country"="location") %>%
+  tidyr::spread(country,cumexcess)
+dim(df)
+names(df)
 
-#' ## Define susceptibiity profiles and school closure mixing
-#' 
-#' Establish some baseline values for susceptibility 
-susBase <- rep(1,nACs)
-susLowKids <- susBase
-susLowKids[1:4] <- 0.333
+df2 <- z %>%
+  dplyr::filter(date < as.Date("2021-08-31")) %>%
+  dplyr::select("date","country",
+               "cumulative_estimated_daily_excess_deaths_per_100k") %>%
+  dplyr::rename("cumexcess" =
+                  "cumulative_estimated_daily_excess_deaths_per_100k") %>%
+  tidyr::spread(country,cumexcess)
 
-#' Run two test cases for the R0 parameterization
-yA <- cov_hybrid(
-    vecN=poppolyuk,
-    R0=1.01,
-    matCt=matpolyuk,
-    vecTcal=seq(0,20,0.001),
-    vecInfNess=rep(1,nACs),
-    vecSusTy=susLowKids,
-    deterministic=TRUE)
-yB <- cov_hybrid(
-    vecN=poppolyuk,
-    R0=0.99,
-    matCt=matpolyuk,
-    vecTcal=seq(0,20,0.001),
-    vecInfNess=rep(1,nACs),
-    vecSusTy=susLowKids,
-    deterministic=TRUE)
+dim(df2)
+colnames <- names(df2)
+windex <- which(colnames=="World")
+dindex <- which(colnames=="date")
+countries <- colnames[-c(windex,dindex)]
+ncountries <- length(countries)
 
-plot(rowSums(yA$inf[,,1]),log="y",col="red",ylim=c(0.1,5))
-points(rowSums(yB$inf[,,1]),col="blue")
-
-#' Load up the our world in data excess mortality
- 
-
-#' Check to see if attack rates are about right with uniform mixing and
-#' uniform susceptibility and a perfectly balanced population. Seems to be OK
-#' to within half a percent.
-yC <- cov_hybrid(
-    R0=1.8)
-a <- sum(yC$inf[,,1])/sum(yC$pop)
-epsilon <- a + exp(-1.8*a) - 1
-epsilon
+plot_cum <- function(ymax=4000) {
+  plot(0:1,type="n",ylim=c(-10,ymax),xlim=c(0,75),
+       ylab="Excess mort per 100k",xlab="Time")
+  points(y1$t/7,y_scen1,type="l",col="black",lwd=3)
+  points(y2$t/7,y_scen2,type="l",col="black",lwd=3)
+  points(y4$t/7,y_scen4,type="l",col="black",lwd=3)
+  points(y4$t/7,y_scen4a,type="l",col="black",lwd=3)
+  for (c in countries) {
+    points(df2[,c],type="l",col="grey",lwd=0.5)
+  }
+  points(df2$`United Kingdom`,type="l",col="blue",lwd=3)
+  points(df2$Australia,type="l",col="red",lwd=3)
+  points(df2$China,type="l",col="green",lwd=3)
+  points(df2$`United States`,type="l",col="cyan",lwd=3)
+  points(df2$Norway,type="l",col="magenta",lwd=3)
+  points(df2$Taiwan,type="l",col="orange",lwd=3)
+}
+plot_cum(4000)
+plot_cum(600)
