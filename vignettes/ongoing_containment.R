@@ -253,3 +253,4 @@ plot_cum <- function(ymax=4000) {
 }
 plot_cum(4000)
 plot_cum(600)
+
