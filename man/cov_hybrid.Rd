@@ -36,7 +36,7 @@ cov_hybrid(
 )
 }
 \arguments{
-\item{\alpha}{Description here}
+\item{Description}{here}
 }
 \value{
 Add the return information here
@@ -44,5 +44,9 @@ Add the return information here
 XXXX This function not fully implemented yet XXXX
 }
 \description{
-Description goes here
+Basic compartmental model for age-structured covid. Can run as
+deterministic or stochastic on fixed time step. Has severity structure
+with finite capacity for severe cases. Useful edge-case tests implemented
+at the end of the function script in an "if (FALSE) {...}" block. These
+could be added to a model intro vingette at some point.
 }

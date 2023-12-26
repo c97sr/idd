@@ -1,4 +1,3 @@
-#' @export
 #' Solves a compartmental model for SARS-CoV-2 like model
 #'
 #' Basic compartmental model for age-structured covid. Can run as
@@ -7,12 +6,13 @@
 #' at the end of the function script in an "if (FALSE) {...}" block. These
 #' could be added to a model intro vingette at some point.
 #'
-#' @param \alpha Description here
-#' @param \alpha Description here
+#' @param Description here
+#' @param Description here
 #'
 #' @return Add the return information here
 #'
 #' XXXX This function not fully implemented yet XXXX
+#' @export
 cov_hybrid <- function(R0 = 2.0,
                        Rp = 1.5,
                        Rover = 0.9,

@@ -22,6 +22,7 @@
 #' attack_rate(1.8)
 #' attack_rate(4.0)
 #' attack_rate(3.0)
+#' @export
 attack_rate <- function(R0=1.8) {
   f <- function(a){1-exp(-R0*a)-a}
   tmp <- uniroot(f,c(0.000001,0.9999999),tol=0.001)

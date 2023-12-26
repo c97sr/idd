@@ -1,5 +1,6 @@
 #' Define a function to take a table and add in binomial estimates and
 #' CIs
+#' @export
 add.CIs <- function(tab,method="wilson") {
     rtn <- tab
     tmp <- dim(tab)

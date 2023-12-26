@@ -36,6 +36,7 @@
 #'
 #' @examples comp_svir()
 #' @examples comp_svir(R0=0.999)
+#' @export
 comp_svir <- function(
   Tg=2.8,
   R0=1.8,

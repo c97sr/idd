@@ -4,7 +4,7 @@ cov_chains  <- function(
                         max_ons = 49,
                         max_trv = 60) {
 
-    require(data.tree)
+    ## require(data.tree)
     
     inf <- simres$inf
     ons <- simres$ons

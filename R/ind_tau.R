@@ -31,7 +31,8 @@
 #'
 #' XXXX This function not fully implemented yet XXXX
 #'
-#' @examples ind.tau()
+#' @examples ind_tau()
+#' @export
 ind_tau <- function(
 	Tg=5,
 	R0=2.6,
