@@ -1,12 +1,16 @@
 #' Define a function to take a table and add in binomial estimates and
 #' CIs
+#' 
+#' @param tab The input table for which CIs are needed.
+#' @param method The optimisation mthod needed, as passed to prop CI
+#' 
 #' @export
-add.CIs <- function(tab,method="wilson") {
-    rtn <- tab
-    tmp <- dim(tab)
-    nrows <- tmp[1]
-    ncols <- tmp[2]
-    rowP <- vector(mode="numeric", length=ncols)
+add.CIs <- function(tab, method = "wilson") {
+  rtn <- tab
+  tmp <- dim(tab)
+  nrows <- tmp[1]
+  ncols <- tmp[2]
+  rowP <- vector(mode="numeric", length=ncols)
     rowUB <- vector(mode="numeric", length=ncols)
     rowLB <- vector(mode="numeric", length=ncols)
     for (i in 1:ncols) {

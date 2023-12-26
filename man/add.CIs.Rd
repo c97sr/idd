@@ -7,6 +7,11 @@ CIs}
 \usage{
 add.CIs(tab, method = "wilson")
 }
+\arguments{
+\item{tab}{The input table for which CIs are needed.}
+
+\item{method}{The optimisation mthod needed, as passed to prop CI}
+}
 \description{
 Define a function to take a table and add in binomial estimates and
 CIs

@@ -189,7 +189,7 @@ round(sum(y4$inf[,,1])/(sum(pop)/2)*100)
 round(sum(y4A$inf[,,1])/(sum(pop)/2)*100)
 round(sum(y4B$inf[,,1])/(sum(pop)/2)*100)
 
-#' Work to load up excess mortality data. This will go futehr up in the final
+#' Work to load up excess mortality data. This will go futher up in the final
 #' version of thius
 localfn <- "/mnt/c/Users/sr/Documents/tmpdata/excess_death.csv"
 localfn_w <- "/mnt/c/Users/sr/Documents/tmpdata/excess_death_econ.csv"

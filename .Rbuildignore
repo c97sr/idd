@@ -5,3 +5,4 @@
 ^idd\.Rcheck$
 ^idd.*\.tar\.gz$
 ^idd.*\.tgz$
+^data-raw$
