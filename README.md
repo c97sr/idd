@@ -1,8 +1,8 @@
 # idd
 
-An R Package for Infectious Disease Dynamics. This acts mainly as a holding vessel for small projects that then find a home elsewhere. it enables easy reproducibility for in progress work.
+An R Package for Infectious Disease Dynamics. This acts mainly as a holding vessel for small projects that then find a home elsewhere. and should enables reproducibility for in progress work.
 
-It also provides utility functions. These are often overtaken by other packages or R base. 
+It also provides utility functions. These are usually overtaken by other packages or R base. 
 
 ## Current activity
 
