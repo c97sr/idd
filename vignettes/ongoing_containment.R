@@ -5,9 +5,7 @@
 #' output: html_document
 #' ---
 #' 
-#' # 
-#'
-#' Script designed to be run with library(rmarkdown) rmarkdown::render(), then run to
+#' # Script designed to be run with library(rmarkdown) rmarkdown::render(), then run to
 #'
 #' ## Background
 #'
