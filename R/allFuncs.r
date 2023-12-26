@@ -16,11 +16,6 @@
 # along with this idsource.  If not, see <http://www.gnu.org/licenses/>.
 circle_plot <- function(wdir='~/png') {
 
-    if (FALSE) {
-        
-        x <- 2
-    }
-
   require("shape")
   frames = 110
   rands <- data.frame(matrix(nrow=0,ncol=3))
