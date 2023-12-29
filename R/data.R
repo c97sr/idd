@@ -32,18 +32,15 @@ NULL
 #' \url{https://www.who.org}
 NULL
 
-#' World Health Organization TB data
+#' Economist weekly COVID-19 excess mortality data for 88 weeks from week 1 2020
 #'
-#' A subset of data from the World Health Organization Global Tuberculosis
-#' Report ...
+#' Downloaded from our world in data
 #'
-#' @format ## `who`
-#' A data frame with 7,240 rows and 60 columns:
+#' @format
+#' A data 88 rows and 238 columns
 #' \describe{
-#'   \item{country}{Country name}
-#'   \item{iso2, iso3}{2 & 3 letter ISO country codes}
-#'   \item{year}{Year}
-#'   ...
+#'   \item{country}{Country names are row labels}
+#'   \item{week}{Weeks starting from week 1 2020 are row labels}
 #' }
-#' @source <https://www.who.int/teams/global-tuberculosis-programme/data>
-"country_excess_death"
+#' @source <https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/excess_mortality/excess_mortality_economist_estimates.csv>
+"country_excess_econ"
