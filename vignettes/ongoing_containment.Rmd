@@ -8,7 +8,7 @@ output: html_document
 ## Background
 
 This analysis was initially developed between mid-February and early morning of March
-10th 2020. It was used to give early estimates of the possible impact of school
+10th 2020. It was used during February to give early estimates of the possible impact of school
 closures.
 
 Next steps
@@ -234,7 +234,7 @@ round(sum(y4B$inf[,,1])/(sum(pop)/2)*100)
 ```
 
 Work to load up excess mortality data. This will go futher up in the final
-version of thius
+version of this
 
 ```{r }
 localfn <- "/mnt/c/Users/sr/Documents/tmpdata/excess_death.csv"
