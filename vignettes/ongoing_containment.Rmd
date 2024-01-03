@@ -7,9 +7,7 @@ output: html_document
 
 ## Background
 
-This analysis was initially developed between mid-February and early morning of March
-10th 2020. It was used during February to give early estimates of the possible impact of school
-closures.
+This analysis was initially developed between mid-February and early morning of March 10th 2020. It was used during February to give early estimates of the possible impact of school closures then updated to describe possible failed mitigation. The original form of the script used for the paper on ongoing containment is presevered in the R file 
 
 Next steps
 
