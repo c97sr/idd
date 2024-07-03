@@ -11,8 +11,8 @@ if (FALSE) {
   library(ggplot2)
   
   # Define the API endpoint
+  # Next thing is to refactor below
   url <- "https://api.ukhsa-dashboard.data.gov.uk/themes/infectious_disease/sub_themes/vaccine_preventable/topics/Measles/geography_types/Nation/geographies/England/metrics/measles_cases_casesByOnsetWeek?page_size=365&age=all"
-  
   
   # Make the GET request to the API with the API key
   response <- GET(url, add_headers(Authorization = paste("Bearer")))
