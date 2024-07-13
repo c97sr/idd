@@ -60,11 +60,11 @@ circle_plot <- function(wdir='~/png') {
 
       #points(x=rands[,1], y=rands[,2], pch = 20, col = rgb(1,0,1,0.5),"cex" = 0.5)
     }
-    for ( j in 1:nrow(rands) ) {
+    for ( j in seq_len(nrow(rands)) ) {
       #mid <- c(rands[j,1],rands[j,2])
       r <- i - rands[j,3]
       if (is.element(r, c(1:10))) {
-        rand <- runif(1,0.8,1.1)
+        rands <- runif(1,0.8,1.1)
         shape::filledcircle(r1=((1)/(r)), mid = c(rands[j,1],rands[j,2]), dr = dr,
                      col = colorRampPalette(c(rgb(1,0,1,0.5), rgb(1,0,1,0)), alpha = TRUE)(10))
       }
