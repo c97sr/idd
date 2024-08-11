@@ -6,8 +6,8 @@ library("tidyr")
 
 #' Work to load up excess mortality data. This will go futher up in the final
 #' version of thius XX XX
-localfn <- "/mnt/c/Users/sriley/Documents/tmpdata/excess_death.csv"
-localfn_w <- "/mnt/c/Users/sriley/Documents/tmpdata/excess_death_econ.csv"
+localfn <- "~/tmp/excess_death.csv"
+localfn_w <- "~/tmp/excess_death_econ.csv"
 webfn <- "https://raw.githubusercontent.com/owid/covid-19-data/4132d2c726fa406d5ff934b4f6411f463992a07d/public/data/excess_mortality/excess_mortality.csv"
 x <- read.csv(webfn)
 write.csv(x,file=localfn,row.names = FALSE)
