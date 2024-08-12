@@ -235,8 +235,9 @@ Work to load up excess mortality data. This will go futher up in the final
 version of this
 
 ```{r }
-localfn <- "~/tmp/excess_death.csv"
-localfn_w <- "~/tmp/excess_death_econ.csv"
+tmpdir <- "C:/tmp/"
+localfn <- paste0(tmpdir,"excess_death.csv")
+localfn_w <- paste0(tmpdir,"excess_death_econ.csv")
 ## webfn <- "https://raw.githubusercontent.com/owid/covid-19-data/4132d2c726fa406d5ff934b4f6411f463992a07d/public/data/excess_mortality/excess_mortality.csv"
 ## x <- read.csv(webfn)
 ## write.csv(x,file=localfn,row.names = FALSE)
@@ -281,24 +282,35 @@ dindex <- which(colnames=="date")
 countries <- colnames[-c(windex,dindex)]
 ncountries <- length(countries)
 
-plot_cum <- function(ymax=4000) {
-  plot(0:1,type="n",ylim=c(-10,ymax),xlim=c(0,75),
-       ylab="Excess mort per 100k",xlab="Time")
-  points(y1$t/7,y_scen1,type="l",col="black",lwd=3)
-  points(y2$t/7,y_scen2,type="l",col="black",lwd=3)
-  points(y4$t/7,y_scen4,type="l",col="black",lwd=3)
-  points(y4$t/7,y_scen4a,type="l",col="black",lwd=3)
+plot_cum <- function(ymin=-10,ymax=4000, weekmax=75,incmodels=TRUE) {
+  plot(0:1,type="n",ylim=c(ymin,ymax),xlim=c(0,weekmax),
+       ylab="Excess mortality per 100k",xlab="Week 2020")
   for (c in countries) {
-    points(df2[,c],type="l",col="grey",lwd=0.5)
+    points(df2[1:weekmax,c],type="l",col="grey",lwd=0.5)
   }
-  points(df2$`United Kingdom`,type="l",col="blue",lwd=3)
-  points(df2$Australia,type="l",col="red",lwd=3)
-  points(df2$China,type="l",col="green",lwd=3)
-  points(df2$`United States`,type="l",col="cyan",lwd=3)
-  points(df2$Norway,type="l",col="magenta",lwd=3)
-  points(df2$Taiwan,type="l",col="orange",lwd=3)
+  points(df2$`United Kingdom`[1:weekmax],type="l",col="blue",lwd=3)
+  points(df2$Australia[1:weekmax],type="l",col="red",lwd=3)
+  points(df2$China[1:weekmax],type="l",col="green",lwd=3)
+  points(df2$`United States`[1:weekmax],type="l",col="cyan",lwd=3)
+  points(df2$Norway[1:weekmax],type="l",col="magenta",lwd=3)
+  ## points(df2$Taiwan[1:weekmax],type="l",col="orange",lwd=3)
+  if (incmodels) {
+    points(y1$t/7,y_scen1,type="l",col="black",lwd=3)
+    points(y2$t/7,y_scen2,type="l",col="black",lwd=3)
+    points(y4$t/7,y_scen4,type="l",col="black",lwd=3)
+    points(y4$t/7,y_scen4a,type="l",col="black",lwd=3)
+  }
+
 }
-plot_cum(4000)
+
+pdf_fig_proof(file=paste0(tmpdir,"plot1.pdf"))
+plot_cum(-100,600,76,FALSE)
+dev.off()
+
+pdf_fig_proof(file=paste0(tmpdir,"plot2.pdf"))
+plot_cum(-100,4000,76,TRUE)
+dev.off()
+
 plot_cum(600)
 
 if (FALSE) {
