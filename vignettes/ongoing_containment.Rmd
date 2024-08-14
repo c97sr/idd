@@ -7,7 +7,7 @@ output: html_document
 
 ## Background
 
-This analysis was initially developed between mid-February and early morning of March 10th 2020. It was used during February to give early estimates of the possible impact of school closures then updated to describe possible failed mitigation. The original form of the script used for the paper on ongoing containment is presevered in the R file 
+This analysis was initially developed between mid-February and early morning of March 10th 2020. It was used during February to give early estimates of the possible impact of school closures then updated to describe what failed mitigation would look like. The original form of the script used for the paper on ongoing containment is presevered in the R file.
 
 Next steps
 
@@ -40,9 +40,7 @@ library("idd")
 ```
 
 Setup a population of size 66 million with a small timestep, and assume
-that there were 6000 infectious individuals at time 0. There are four groups
-in the model which would normally represent age groups. However, they are all
-assumed to be eqactly equal.
+that there were 6000 infectious individuals at time 0. There are four groups in the model which would normally represent age groups. However, they are all assumed to be eqactly equal.
 
 ```{r }
 dt <- 0.1
