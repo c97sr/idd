@@ -8,4 +8,5 @@ I'm refining the ongoing_containment.R script in vignettes to compare pandemic s
 
 I'd also like to find quarterly GDP data for Q2 to Q3 2020 to check the correlation between cumulative excess deaths and changes in GDP over that period.
 
+The main files I'm working in at the moment are:
 
