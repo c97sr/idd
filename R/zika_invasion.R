@@ -26,12 +26,12 @@
 #' @param N size of population
 #'
 #' @examples 
-#' zika_invasion(its=100,file="~/tmp/zika_example.pdf")
-#' zika_invasion(its=100,file="screen",N=1000000)
+#' zika_invasion(its=100)
+#' zika_invasion(its=100,N=1000000)
 #' @export
 zika_invasion <- function(
     its=10,
-    file="screen",
+    ## file="screen",
     N=1000000,
     seed=19283719,
     highlights=c(1,2,3),
@@ -50,7 +50,7 @@ zika_invasion <- function(
     De=De, Tg=Tg, A=0.9, I0 = 10, trickle=0/7,
     noTimeSteps=maxts,deterministic=FALSE,R0=2,N=N
   )
-  if (file != "screen") pdf_fig_proof(file=file,pw=9)
+  ## if (file != "screen") pdf_fig_proof(file=file,pw=9)
   plot(r1$beta*Di,type="n",ylim=c(min(R0axes),max(R0axes)),axes=FALSE,xlab="",ylab="")
   axis(4,at=R0axes,col=grey.colors(10)[5],las=1)
   polygon(
@@ -73,5 +73,5 @@ zika_invasion <- function(
   for (i in 1:length(highlights)) {
       points(senstab[highlights[i],],type="l",col=highcolors[i],lwd=2)
   }
-  if (file != "screen") dev.off()
+  ## if (file != "screen") dev.off()
 }

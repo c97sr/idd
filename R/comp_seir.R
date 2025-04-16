@@ -46,6 +46,7 @@
 #'
 #' @examples comp_seir()
 #' @examples comp_seir(R0=0.999)
+#' @export
 comp_seir <- function(
   De=7,
   Tg=15,

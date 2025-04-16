@@ -85,6 +85,13 @@ if (FALSE) {
     plot(y1$time,y1$inf_inc,type="l",xlab="Time",ylab="Incidence")
     points(y2$time,y2$inf_inc)
 
-    ## Stop here. This is enough to try to write the exam
-    
+  ## Stop here. This is enough to try to write the exam
+
+  ## Adding in some work here for Michelle's inaugural
+  ## copy and paste from the share odds_ratio directory in Dropbox
+  rm(list = ls(all = TRUE))
+  library(devtools)
+  pdf_fig_proof()
+  dev.off()
+
 }

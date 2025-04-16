@@ -26,5 +26,5 @@ Infections are drawn from simple offspring and serial
 interval distributions.
 }
 \examples{
-ind.tau()
+ind_tau()
 }

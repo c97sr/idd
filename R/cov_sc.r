@@ -1,3 +1,6 @@
+#' Explores school closure options for a viral respiratory pandemic
+#' 
+#' Used in Feb 2020.
 #' @export
 cov_sc <- function(vecR0=seq(1.5,3,0.5),
                    vecTStart=seq(21,21+2*7,7),

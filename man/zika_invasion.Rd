@@ -6,7 +6,6 @@
 \usage{
 zika_invasion(
   its = 10,
-  file = "screen",
   N = 1e+06,
   seed = 19283719,
   highlights = c(1, 2, 3),
@@ -19,9 +18,9 @@ zika_invasion(
 \arguments{
 \item{its}{number of iterations for the second population}
 
-\item{file}{name of file to write pdf or "screen"}
-
 \item{N}{size of population}
+
+\item{file}{name of file to write pdf or "screen"}
 }
 \description{
 Simulates a stochastic compartmental model to reproduce an
@@ -29,6 +28,6 @@ illustration of how two very similar communities might have
 very different initial epidemics.
 }
 \examples{
-zika_invasion(its=100,file="~/tmp/zika_example.pdf")
-zika_invasion(its=100,file="screen",N=1000000)
+zika_invasion(its=100)
+zika_invasion(its=100,N=1000000)
 }
