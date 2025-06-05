@@ -9,27 +9,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-## Loading up the data
-
-```{r, echo = FALSE}
-library(idd)
-```
-
-The UK provides the We can load up the most recent UK data for four different variables.
-
-
-=======
----
-title: "Routine output with UK COVID dashboard"
-author: "Steven Riley"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{covid-uk-public}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
-
 ## Introduction
 
 This document is a vignette in the R package idd (infectious disease dynamics) which is hosted in github but the c97sr account. It is intended as a short tutorial for using data from the UK COVID-19 dashboard repository. 
@@ -42,9 +21,9 @@ XX next edit the line below to read in deaths, hospitalizations and cases. XX
 
 ```{r, echo = FALSE}
 ## If needed load_all()
-dat <- load_uk_cov_data()
-dim(dat)
-names(dat)
+## dat <- load_uk_cov_data()
+## dim(dat)
+## names(dat)
 ```
 
 The introduction will go here. ANd then I can add a little more.
