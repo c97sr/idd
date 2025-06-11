@@ -2,7 +2,11 @@
 title: "Ongoing containment as a policy objective"
 author: Steven Riley
 date: late 2023
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ongoing_containment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ## Background
