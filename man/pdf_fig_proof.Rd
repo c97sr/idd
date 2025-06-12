@@ -28,5 +28,5 @@ pdf_fig_proof(
 A function to setup a clean pdf file for a single subplot
 }
 \examples{
-pdf_proof()
+pdf_fig_proof()
 }

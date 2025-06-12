@@ -24,7 +24,7 @@
 #' @param plotwidth Is a parameter
 #' @param posplot Is a parameter
 #' @examples 
-#' pdf_proof()
+#' pdf_fig_proof()
 #' @export
 pdf_fig_proof <-
 function(findex=1,file=paste("./pdf_sub_",findex,".pdf",sep=""),pw=7,ph=7,textscale=0.6,xpd=NA) {

@@ -4,7 +4,7 @@ author: Steven Riley
 date: late 2023
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ongoing_containment}
+  %\VignetteIndexEntry{Ongoing containment as a policy objective}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -30,7 +30,7 @@ if that is how the code has been distributed.
 
 ```{r }
 ## source("~/git/idd/R/cov_hybrid.r")
-library(devtools)
+## library(devtools)
 library(dplyr)
 ```
 
@@ -40,7 +40,7 @@ Install SR's idd package either from github or locally
 ## install_github("c97sr/idd")
 ## devtools::uninstall()
 ## devtools::load_all()
-library("idd")
+## library("idd")
 ```
 
 Setup a population of size 66 million with a small timestep, and assume
@@ -75,7 +75,7 @@ y1 <- idd::cov_hybrid(
 Then run with a reactive drop when the virus is known to be present
 
 ```{r }
-y2 <- cov_hybrid(
+y2 <- idd::cov_hybrid(
     vecN=pop,
     vecI0=seed,
     R0=2.0,
@@ -92,7 +92,7 @@ y2 <- cov_hybrid(
 Then run with a reactive drop when the virus is known to be present
 
 ```{r }
-y3 <- cov_hybrid(
+y3 <- idd::cov_hybrid(
     vecN=pop,
     vecI0=seed,
     R0=2.0,
@@ -109,7 +109,7 @@ y3 <- cov_hybrid(
 Then run with a reactive drop when the virus is known to be present
 
 ```{r }
-y4 <- cov_hybrid(
+y4 <- idd::cov_hybrid(
     R0=2.0,
     vecN=pop,
     vecI0=seed,
@@ -126,7 +126,7 @@ y4 <- cov_hybrid(
 Then run with a reactive drop when the virus is known to be present
 
 ```{r }
-y4A <- cov_hybrid(
+y4A <- idd::cov_hybrid(
     R0=2.0,
     vecN=pop,
     vecI0=seed,
@@ -138,7 +138,7 @@ y4A <- cov_hybrid(
     vecPS=rep(0.05,length(pop)),
     trickle=10,
     vecTcalc=xvals)
-y4B <- cov_hybrid(
+y4B <- idd::cov_hybrid(
     R0=2.0,
     vecN=pop,
     vecI0=seed,
@@ -237,86 +237,87 @@ Work to load up excess mortality data. This will go futher up in the final
 version of this
 
 ```{r }
-tmpdir <- "C:/tmp/"
-localfn <- paste0(tmpdir,"excess_death.csv")
-localfn_w <- paste0(tmpdir,"excess_death_econ.csv")
-## webfn <- "https://raw.githubusercontent.com/owid/covid-19-data/4132d2c726fa406d5ff934b4f6411f463992a07d/public/data/excess_mortality/excess_mortality.csv"
-## x <- read.csv(webfn)
-## write.csv(x,file=localfn,row.names = FALSE)
-## wwebfn <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/excess_mortality/excess_mortality_economist_estimates.csv"
-## w <- read.csv(wwebfn)
-## write.csv(w,file=localfn_w,row.names=FALSE)
 ```
 
 These bits need to be coded as a data object
 
 ```{r }
-y <- read.csv(localfn)
-z <- read.csv(localfn_w)
-names(z)
-dim(z)
-
-length(table(z$country))
-
-## all(dim(x) == dim(y))
-## all(names(x) == names(y))
-df <- y %>%
-  dplyr::filter(time_unit=="weekly", date < as.Date("2021-08-31")) %>%
-  dplyr::select("location", "cum_excess_per_million_proj_all_ages","date") %>%
-  dplyr::rename("cumexcess" = "cum_excess_per_million_proj_all_ages",
-                "country"="location") %>%
-  tidyr::spread(country,cumexcess)
-dim(df)
-names(df)
-
-df2 <- z %>%
-  dplyr::filter(date < as.Date("2021-08-31")) %>%
-  dplyr::select("date","country",
-               "cumulative_estimated_daily_excess_deaths_per_100k") %>%
-  dplyr::rename("cumexcess" =
-                  "cumulative_estimated_daily_excess_deaths_per_100k") %>%
-  tidyr::spread(country,cumexcess)
-
-dim(df2)
-colnames <- names(df2)
-windex <- which(colnames=="World")
-dindex <- which(colnames=="date")
-countries <- colnames[-c(windex,dindex)]
-ncountries <- length(countries)
-
-plot_cum <- function(ymin=-10,ymax=4000, weekmax=75,incmodels=TRUE) {
-  plot(0:1,type="n",ylim=c(ymin,ymax),xlim=c(0,weekmax),
-       ylab="Excess mortality per 100k",xlab="Week 2020")
-  for (c in countries) {
-    points(df2[1:weekmax,c],type="l",col="grey",lwd=0.5)
-  }
-  points(df2$`United Kingdom`[1:weekmax],type="l",col="blue",lwd=3)
-  points(df2$Australia[1:weekmax],type="l",col="red",lwd=3)
-  points(df2$China[1:weekmax],type="l",col="green",lwd=3)
-  points(df2$`United States`[1:weekmax],type="l",col="cyan",lwd=3)
-  points(df2$Norway[1:weekmax],type="l",col="magenta",lwd=3)
-  ## points(df2$Taiwan[1:weekmax],type="l",col="orange",lwd=3)
-  if (incmodels) {
-    points(y1$t/7,y_scen1,type="l",col="black",lwd=3)
-    points(y2$t/7,y_scen2,type="l",col="black",lwd=3)
-    points(y4$t/7,y_scen4,type="l",col="black",lwd=3)
-    points(y4$t/7,y_scen4a,type="l",col="black",lwd=3)
-  }
-
-}
-
-pdf_fig_proof(file=paste0(tmpdir,"plot1.pdf"))
-plot_cum(-100,600,76,FALSE)
-dev.off()
-
-pdf_fig_proof(file=paste0(tmpdir,"plot2.pdf"))
-plot_cum(-100,4000,76,TRUE)
-dev.off()
-
-plot_cum(600)
-
 if (FALSE) {
-
+  ## tmpdir <- "C:/tmp/"
+  localfn <- paste0(tmpdir,"excess_death.csv")
+  localfn_w <- paste0(tmpdir,"excess_death_econ.csv")
+  ## webfn <- "https://raw.githubusercontent.com/owid/covid-19-data/4132d2c726fa406d5ff934b4f6411f463992a07d/public/data/excess_mortality/excess_mortality.csv"
+  ## x <- read.csv(webfn)
+  ## write.csv(x,file=localfn,row.names = FALSE)
+  ## wwebfn <- "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/excess_mortality/excess_mortality_economist_estimates.csv"
+  ## w <- read.csv(wwebfn)
+  ## write.csv(w,file=localfn_w,row.names=FALSE)
+  
+  y <- read.csv(localfn)
+  z <- read.csv(localfn_w)
+  names(z)
+  dim(z)
+  
+  length(table(z$country))
+  
+  ## all(dim(x) == dim(y))
+  ## all(names(x) == names(y))
+  df <- y %>%
+    dplyr::filter(time_unit=="weekly", date < as.Date("2021-08-31")) %>%
+    dplyr::select("location", "cum_excess_per_million_proj_all_ages","date") %>%
+    dplyr::rename("cumexcess" = "cum_excess_per_million_proj_all_ages",
+                  "country"="location") %>%
+    tidyr::spread(country,cumexcess)
+  dim(df)
+  names(df)
+  
+  df2 <- z %>%
+    dplyr::filter(date < as.Date("2021-08-31")) %>%
+    dplyr::select("date","country",
+                  "cumulative_estimated_daily_excess_deaths_per_100k") %>%
+    dplyr::rename("cumexcess" =
+                    "cumulative_estimated_daily_excess_deaths_per_100k") %>%
+    tidyr::spread(country,cumexcess)
+  
+  dim(df2)
+  colnames <- names(df2)
+  windex <- which(colnames=="World")
+  dindex <- which(colnames=="date")
+  countries <- colnames[-c(windex,dindex)]
+  ncountries <- length(countries)
+  
+  plot_cum <- function(ymin=-10,ymax=4000, weekmax=75,incmodels=TRUE) {
+    plot(0:1,type="n",ylim=c(ymin,ymax),xlim=c(0,weekmax),
+         ylab="Excess mortality per 100k",xlab="Week 2020")
+    for (c in countries) {
+      points(df2[1:weekmax,c],type="l",col="grey",lwd=0.5)
+    }
+    points(df2$`United Kingdom`[1:weekmax],type="l",col="blue",lwd=3)
+    points(df2$Australia[1:weekmax],type="l",col="red",lwd=3)
+    points(df2$China[1:weekmax],type="l",col="green",lwd=3)
+    points(df2$`United States`[1:weekmax],type="l",col="cyan",lwd=3)
+    points(df2$Norway[1:weekmax],type="l",col="magenta",lwd=3)
+    ## points(df2$Taiwan[1:weekmax],type="l",col="orange",lwd=3)
+    if (incmodels) {
+      points(y1$t/7,y_scen1,type="l",col="black",lwd=3)
+      points(y2$t/7,y_scen2,type="l",col="black",lwd=3)
+      points(y4$t/7,y_scen4,type="l",col="black",lwd=3)
+      points(y4$t/7,y_scen4a,type="l",col="black",lwd=3)
+    }
+    
+  }
+  
+  ## pdf_fig_proof(file=paste0(tmpdir,"plot1.pdf"))
+  plot_cum(-100,600,76,FALSE)
+  ## dev.off()
+  
+  ## pdf_fig_proof(file=paste0(tmpdir,"plot2.pdf"))
+  plot_cum(-100,4000,76,TRUE)
+  ## dev.off()
+  
+  plot_cum(600)
+  
+  
   #' Load a database of social mixing patterns
   library(socialmixr)
   library(devtools)
@@ -370,6 +371,7 @@ if (FALSE) {
   a <- sum(yC$inf[,,1])/sum(yC$pop)
   epsilon <- (a + exp(-1.8*a) - 1)/a
   epsilon
-
 }
+
+
 ```
